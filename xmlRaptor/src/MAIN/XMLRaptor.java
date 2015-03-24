@@ -11,7 +11,6 @@ public class XMLRaptor {
 	
 	public static void main(String[] args) throws Exception {
 		
-		//System.out.println(Runtime.getRuntime().availableProcessors());
 		raptor = new RaptorThreadHandler();
 		
 		raptor.initDefaultInput();
@@ -19,10 +18,6 @@ public class XMLRaptor {
 		raptor.parseAndInject();
 		System.gc();
 		
-
-		//System.out.println((long) (System.currentTimeMillis() - start));
-		//raptor.getInput();
-		//raptor.dropAll();  //working
 	
     }
 }
