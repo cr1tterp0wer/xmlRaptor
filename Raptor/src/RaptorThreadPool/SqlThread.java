@@ -23,14 +23,14 @@ public class SqlThread extends CallableWorkerThread{
 	public Integer call(){
 		//wait until there is something to do
 		while(!signal.hasDataToProcess()){
+			synchronized(this){
 				System.out.println("SQL#"+ workerNumber +" :: " +" is waiting for signal");
 				try {this.wait();} catch (InterruptedException e) {e.printStackTrace();}
-				
+			
+			}
 		}
-		
-		
-		
 		System.out.println("SQL#"+ workerNumber +" :: READY!!!!!!!!!!!!!");
+		signal.setHasDataToProcess(false);
 		//testCall();
 		//should wait on init for the xmlObjects to populate the list<Futures> xmlobjects
 		

@@ -15,13 +15,14 @@ public class RaptorSignal extends Signal{
 	public CallableWorkerThread getActiveThread(){return t;}
 	public void setNotify(){
 		if(this.hasDataToProcess){
+			
 				try {
-					t.notify();		
+					synchronized(t){
+						t.notify();	
+					}
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
-				this.hasDataToProcess=false;
-				
 		}
 	}
 }

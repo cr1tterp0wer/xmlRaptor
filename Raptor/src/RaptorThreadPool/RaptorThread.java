@@ -33,7 +33,7 @@ public class RaptorThread extends CallableWorkerThread{
 	}
 	public void setNotification(){
 		((RaptorSignal) signal).setNotify();
-		System.out.println("setSignal()");
+		
 	}
 	
 	public void testCall(){
