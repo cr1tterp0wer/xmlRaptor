@@ -6,7 +6,7 @@ import java.util.concurrent.*;
 
 public class ThreadPool {
 
-    private ArrayList<CallableWorkerThread> workers; //callable returns a Future obj
+    protected ArrayList<CallableWorkerThread> workers; //callable returns a Future obj
     private Future futures[];
     private ExecutorService executor;
     

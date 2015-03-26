@@ -8,6 +8,10 @@ import ThreadPool.Signal;
 
 public class SqlThread extends CallableWorkerThread{
 	
+	//isrunning synchronized
+	//synchronized boolean isRunning = false;
+	
+	
 	public SqlThread(int workerNumber){
 		super(workerNumber);
 	}
@@ -21,12 +25,13 @@ public class SqlThread extends CallableWorkerThread{
 		while(!signal.hasDataToProcess()){
 				System.out.println("SQL#"+ workerNumber +" :: " +" is waiting for signal");
 				try {this.wait();} catch (InterruptedException e) {e.printStackTrace();}
+				
 		}
+		
+		
 		
 		System.out.println("SQL#"+ workerNumber +" :: READY!!!!!!!!!!!!!");
 		//testCall();
-		
-		
 		//should wait on init for the xmlObjects to populate the list<Futures> xmlobjects
 		
 		return workerNumber;

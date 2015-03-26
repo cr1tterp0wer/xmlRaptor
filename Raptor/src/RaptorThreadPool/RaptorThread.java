@@ -45,7 +45,6 @@ public class RaptorThread extends CallableWorkerThread{
 			try {
 				Thread.sleep(delta);	
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			

@@ -22,12 +22,11 @@ public class RaptorThreadPoolManager {
 		threadPool = new RaptorThreadPool();
 		
 		sqlThread = new SqlThread(0, signal);
-		xml01     = new RaptorThread(1, signal);
-		
 		signal.setActiveThread(sqlThread);
-	
-		xml02     = new RaptorThread(3, signal);
-		xml03     = new RaptorThread(4, signal);
+		
+		xml01     = new RaptorThread(1, signal);
+		xml02     = new RaptorThread(2, signal);
+		xml03     = new RaptorThread(3, signal);
 		
 		
 		threadPool.addWorker(sqlThread);

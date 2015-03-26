@@ -16,12 +16,12 @@ public class RaptorSignal extends Signal{
 	public void setNotify(){
 		if(this.hasDataToProcess){
 				try {
-					t.call();
-					this.hasDataToProcess=false;
+					t.notify();		
 				} catch (Exception e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
+				this.hasDataToProcess=false;
+				
 		}
 	}
 }
