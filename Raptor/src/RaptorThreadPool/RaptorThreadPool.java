@@ -25,6 +25,10 @@ public class RaptorThreadPool extends ThreadPool{
 		for(int i =0;i<workers.size(); i++){
 			if(workers.get(i).getWorkerNumber() == k)
 				return workers.get(i);
+			else{
+				try {throw new Exception("Cannot find workerThread with ID::" + k);
+				} catch (Exception e) {}
+			}
 		}
 		return null;
 	}
