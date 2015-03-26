@@ -31,7 +31,7 @@ public class SqlThread extends CallableWorkerThread{
 		}
 		System.out.println("SQL#"+ workerNumber +" :: READY!!!!!!!!!!!!!");
 		signal.setHasDataToProcess(false);
-		//testCall();
+		testCall();
 		//should wait on init for the xmlObjects to populate the list<Futures> xmlobjects
 		
 		return workerNumber;

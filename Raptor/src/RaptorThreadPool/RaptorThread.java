@@ -15,7 +15,6 @@ public class RaptorThread extends CallableWorkerThread{
 		super(workerNumber, s);
 	}
 	
-	
 	@Override
 	public Integer call(){
 		
@@ -31,6 +30,7 @@ public class RaptorThread extends CallableWorkerThread{
 		setNotification();
 		
 	}
+	
 	public void setNotification(){
 		((RaptorSignal) signal).setNotify();
 		
@@ -40,7 +40,7 @@ public class RaptorThread extends CallableWorkerThread{
 		Random r    = new Random();
 		
 		for(int i=0;i< 100;i++){
-			int   delta = r.nextInt(10);
+			int   delta = r.nextInt(1000);
 			System.out.println("xml#"+ workerNumber +" :: " +i);
 			try {
 				Thread.sleep(delta);	
@@ -50,5 +50,4 @@ public class RaptorThread extends CallableWorkerThread{
 			
 		}
 	}
-	
 }
