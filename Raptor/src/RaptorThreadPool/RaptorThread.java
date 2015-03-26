@@ -27,11 +27,8 @@ public class RaptorThread extends CallableWorkerThread{
 	}
 	
 	public void setSignal(){
-		
-		
 		signal.setHasDataToProcess(true);
 		setNotification();
-		
 		
 	}
 	public void setNotification(){
