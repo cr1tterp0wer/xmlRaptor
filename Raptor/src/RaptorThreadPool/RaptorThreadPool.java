@@ -20,8 +20,13 @@ public class RaptorThreadPool extends ThreadPool{
 	public RaptorThreadPool(){
 		super(NUMBER_OF_WORKERS);
 	}
-	public CallableWorkerThread getThreadFromID(int i){
-		return workers.get(i);
+	public CallableWorkerThread getThreadFromID(int k){
+		
+		for(int i =0;i<workers.size(); i++){
+			if(workers.get(i).getWorkerNumber() == k)
+				return workers.get(i);
+		}
+		return null;
 	}
 	
 }
