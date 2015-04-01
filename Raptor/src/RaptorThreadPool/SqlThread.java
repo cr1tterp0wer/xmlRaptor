@@ -3,37 +3,63 @@ package RaptorThreadPool;
 import java.util.Random;
 
 import ThreadPool.CallableWorkerThread;
+import ThreadPool.SQLConnector;
 import ThreadPool.Signal;
 
 
 public class SqlThread extends CallableWorkerThread{
 	
-	//isrunning synchronized
-	//synchronized boolean isRunning = false;
-	
+	public SQLConnector sqlConnector;
 	
 	public SqlThread(int workerNumber){
 		super(workerNumber);
+		sqlConnector = new SQLConnector();
+		initDefaultInput();
 	}
 	
 	public SqlThread(int workerNumber, Signal s){
 		super(workerNumber, s);
+		sqlConnector = new SQLConnector();
+		initDefaultInput();
+	}
+	
+	//connect to db
+	public void init(String path, String xmlObject,String serverAddress,
+			String port, String username,
+			String pass, String dbName){
+		sqlConnector.connect(path, xmlObject, serverAddress, port, username, pass, dbName);
+		
+	}
+	
+	public void initDefaultInput(){
+		sqlConnector.connect("./metadata/","filing","localhost",
+							"3306", "root", "critterpower", 
+							"web_app");	
 	}
 	
 	public Integer call(){
-		//wait until there is something to do
+		
+		//should wait on init for the xmlObjects to populate the list<Futures> xmlobjects
 		while(!signal.hasDataToProcess()){
-			synchronized(this){
-				System.out.println("SQL#"+ workerNumber +" :: " +" is waiting for signal");
-				try {this.wait();} catch (InterruptedException e) {e.printStackTrace();}
-			
+				synchronized(this){
+					System.out.println("SQL#"+ workerNumber +" :: " +" is waiting for signal");
+					try {this.wait();} catch (InterruptedException e) {e.printStackTrace();}
+
 			}
 		}
-		System.out.println("SQL#"+ workerNumber +" :: READY!!!!!!!!!!!!!");
-		signal.setHasDataToProcess(false);
-		testCall();
-		//should wait on init for the xmlObjects to populate the list<Futures> xmlobjects
 		
+		System.out.println("SQL#"+ workerNumber +" :: READY!!!!!!!!!!!!!");
+		
+		//Do work here
+		while(!((RaptorSignal)signal).areAllThreadsDone()){
+			testCall();
+		}
+		
+		//should close
+		signal.setHasDataToProcess(false);
+		
+		
+		sqlConnector.closeConnection();
 		return workerNumber;
 	}
 	

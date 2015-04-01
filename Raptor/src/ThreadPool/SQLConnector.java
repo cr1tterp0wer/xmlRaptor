@@ -1,4 +1,4 @@
-package RaptorSQL;
+package ThreadPool;
 
 import com.mysql.jdbc.Connection;
 import com.mysql.jdbc.DatabaseMetaData;
@@ -11,19 +11,19 @@ import java.util.Properties;
 import java.util.Scanner;
 
 
-public class SQLController {
+public class SQLConnector {
+	
 	
 	Connection conn;
-	PreparedStatement ps;
-	Scanner    scan;
+	//PreparedStatement ps;
+	//Scanner    scan;
 	Properties connProperties;
 	
-	public SQLController(){
+	public SQLConnector(){
 		
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
 		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -31,9 +31,6 @@ public class SQLController {
 	public void connect(String path, String xmlObject,String serverAddress,
 						String port, String username,
 						String pass, String dbName){
-		
-		assert username != null;
-		assert pass     != null;
 		
 		connProperties = new Properties();
 		connProperties.put("user", username);
@@ -103,5 +100,4 @@ public class SQLController {
 			return;
 		}
 	}
-
 }

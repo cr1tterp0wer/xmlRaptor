@@ -7,11 +7,8 @@ public class Raptor {
 	
 	public static void main(String[] args) {
 		pool = new RaptorThreadPoolManager();		
-		
 		pool.init();
 		pool.begin();
 		pool.end();
-		
 	}
-
 }

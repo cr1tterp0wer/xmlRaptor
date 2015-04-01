@@ -19,8 +19,8 @@ public class RaptorThread extends CallableWorkerThread{
 	public Integer call(){
 		
 		testCall();
-		//addData();
 		setSignal();
+		((RaptorSignal)signal).incrementFinishedThreads();
 		
 		return workerNumber;
 	}
@@ -48,6 +48,7 @@ public class RaptorThread extends CallableWorkerThread{
 				e.printStackTrace();
 			}
 			
-		}
+		}	
+		((RaptorSignal)signal).incrementFinishedThreads();
 	}
 }
