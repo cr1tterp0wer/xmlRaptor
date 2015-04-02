@@ -41,9 +41,11 @@ public class SQLConnector {
 			conn = (Connection) DriverManager.getConnection("jdbc:mysql://" + serverAddress
 					                          +":"+ port + "/" + dbName, connProperties);
 			System.out.println("Connected to database");
+			successfulConnection();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			errorConnecting();
 		}
 	}
 	
@@ -100,4 +102,7 @@ public class SQLConnector {
 			return;
 		}
 	}
+	protected void errorConnecting(){}
+	protected void successfulConnection(){}
+
 }

@@ -3,12 +3,10 @@ package RaptorThread;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
-
 import Tree.XMLTree.Node;
 import Tree.XMLTreeHandler;
 
@@ -23,7 +21,6 @@ public class XMLThread<T> implements Runnable{
 	private String    parentObjectName;
 	private RaptorThreadHandler raptorThreadHandlerRef;
 	public  XMLTreeHandler      tree;
-	
 	File file;
 	
 	public XMLThread( RaptorThreadHandler rth, String objectName ){
@@ -49,7 +46,8 @@ public class XMLThread<T> implements Runnable{
 		try {
 			xmlStreamReader = xmlInputFactory.createXMLStreamReader(new FileInputStream(file));
 		}catch (FileNotFoundException e) {e.printStackTrace();} 
-		 catch (XMLStreamException    e) {e.printStackTrace();}		
+		 catch (XMLStreamException    e) {e.printStackTrace();}	
+		
 		Node<Object> root = new Node<Object>();
 		tree = new XMLTreeHandler(root);
 		element = new XMLObject();
@@ -83,6 +81,7 @@ public class XMLThread<T> implements Runnable{
 				event = xmlStreamReader.next();
 			}catch (XMLStreamException e) {e.printStackTrace();}
 		}
+		
 		
 		//take the object and send it over to the sqlThread
 		

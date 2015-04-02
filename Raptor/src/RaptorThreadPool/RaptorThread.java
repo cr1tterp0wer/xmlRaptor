@@ -2,10 +2,14 @@ package RaptorThreadPool;
 
 import java.util.Random;
 
+import Persistence.FileObject;
 import ThreadPool.CallableWorkerThread;
 import ThreadPool.Signal;
 
 public class RaptorThread extends CallableWorkerThread{
+	
+	private FileObject raptorFile;
+	private String     path;
 
 	public RaptorThread(int id){
 		super(id);
@@ -17,14 +21,15 @@ public class RaptorThread extends CallableWorkerThread{
 	
 	@Override
 	public Integer call(){
-		
 		testCall();
 		setSignal();
 		((RaptorSignal)signal).incrementFinishedThreads();
 		
 		return workerNumber;
 	}
-	
+	public void init(String _path){
+		path = _path;
+	}
 	public void setSignal(){
 		signal.setHasDataToProcess(true);
 		setNotification();
@@ -49,6 +54,5 @@ public class RaptorThread extends CallableWorkerThread{
 			}
 			
 		}	
-		((RaptorSignal)signal).incrementFinishedThreads();
 	}
 }
