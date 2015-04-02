@@ -64,9 +64,9 @@ public class RaptorThreadPoolManager {
 				System.exit(1);
 			}
 			
-			System.out.println("please enter PATH(skip if DROPPING ALL):");
+			System.out.println("please enter PATH:");
 			credentials[0]          = scan.nextLine();
-			System.out.println("please enter XML OBJECT(skip if DROPPING ALL):");
+			System.out.println("please enter XML OBJECT:");
 			credentials[1]          = scan.nextLine();
 			System.out.println("please enter SERVER ADDRESS:");
 			credentials[2]          = scan.nextLine();
@@ -82,10 +82,12 @@ public class RaptorThreadPoolManager {
 			sqlThread.init(credentials);
 		}
 		
+		
 	}
 	
 	public void setValidInput(boolean b){validInput = b;}
 	public void setRaptorSignal(Signal s){signal = (RaptorSignal)s;}
 	public void setTheadPool(ThreadPool tp){threadPool = (RaptorThreadPool)tp;}
+	public void automatedLaunch(){}
 	
 }

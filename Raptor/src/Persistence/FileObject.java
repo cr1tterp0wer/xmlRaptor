@@ -10,14 +10,17 @@ public class FileObject {
 	private File    folder;
 	private int     numFiles;
 	private boolean canParse;
+	private FileReadWrite fileIO;
 	
 	public FileObject(String p){
 		
 		folder      = new File(p);
+		fileIO      = new FileReadWrite(p);
 		listOfFiles = folder.listFiles();
 		fileNames   = new Stack<String>();
 		numFiles    = 0;
 		canParse    = false;
+		
 	}
 	
 	public boolean canParseDirectory(){
@@ -49,6 +52,11 @@ public class FileObject {
 	public synchronized boolean isFileNamesEmpty(){
 		return fileNames.empty();
 	}
+	
+	//TODO: REMOVE FILENAMES.equals WHAT IS ALREADY IN db_STORE.fqr!!!!
+	
+	public String popFileNames(){return fileNames.pop();}
+	public int getSize(){return fileNames.size();}
 	
 }
 

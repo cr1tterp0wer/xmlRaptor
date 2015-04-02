@@ -45,7 +45,7 @@ public class SqlThread extends CallableWorkerThread{
 		sqlConnector.connect(args[0],args[1],args[2],args[3],args[4],args[5],args[6]);
 	}
 	
-
+	//THE CALL METHOD EXECUTES DIRECTLY WHEN THE THREAD RUNS
 	public Integer call(){
 		
 		//should wait on init for the xmlObjects to populate the list<Futures> xmlobjects

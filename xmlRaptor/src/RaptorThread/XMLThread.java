@@ -21,7 +21,7 @@ public class XMLThread<T> implements Runnable{
 	private String    parentObjectName;
 	private RaptorThreadHandler raptorThreadHandlerRef;
 	public  XMLTreeHandler      tree;
-	File file;
+	//File file;
 	
 	public XMLThread( RaptorThreadHandler rth, String objectName ){
 		raptorThreadHandlerRef = rth;
