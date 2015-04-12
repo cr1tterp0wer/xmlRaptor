@@ -33,9 +33,6 @@ public class FileReadWrite {
 	
 	public void addCompletedFile(String fileName){
 		
-	    // you want to output to file
-	    // BufferedWriter writer = new BufferedWriter(new FileWriter(file3, true));
-	    // but let's print to console while debugging
 	    BufferedWriter writer;
 		try {
 			writer = new BufferedWriter(new FileWriter(file));
@@ -88,10 +85,7 @@ public class FileReadWrite {
 		
 		return isFound;
 	}
-	public void createDirAndFile(){
-		//"creating directory" 'etc'
-		//createFile("filename");
-	}
+
 	private void createFile(){
 		//creating file "db_STORE.fqr"
 		try {

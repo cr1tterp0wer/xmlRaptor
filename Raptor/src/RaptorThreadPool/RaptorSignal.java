@@ -7,8 +7,8 @@ public class RaptorSignal extends Signal{
 	
 	private CallableWorkerThread t;
 	private boolean allThreadsAreDone = false;
-	private int numThreads;
-	private int numFinishedThreads = 0;
+	private   int     numThreads;
+	private   int     numFinishedThreads = 0;
 	
 	public RaptorSignal(int numberOfThreads){
 		super();
@@ -29,15 +29,24 @@ public class RaptorSignal extends Signal{
 		}
 	}
 	
-	public synchronized void incrementFinishedThreads(){++numFinishedThreads;}
-	public synchronized boolean areAllThreadsDone(){
+	public synchronized void incrementAndPollThreads(){
+		this.numFinishedThreads++;
+		areAllThreadsDone();
+	}
+	
+	public synchronized int  getNumberFinishedThreads(){return numFinishedThreads;}
+	private synchronized boolean areAllThreadsDone(){
 		//every xmlRaptor sends nofication here
+
+		System.out.println("Areallthreadsdone()");
 		if(numFinishedThreads >= numThreads){
-			allThreadsAreDone = true;
+			allThreadsAreDone  = true;
 			System.out.println("WE ARE ALL DONE!");
+			t.notify();
 		}
 		else
 			allThreadsAreDone = false;
+		
 		return allThreadsAreDone;
 	}
 }

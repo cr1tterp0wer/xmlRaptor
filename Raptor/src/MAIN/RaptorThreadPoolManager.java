@@ -29,6 +29,7 @@ public class RaptorThreadPoolManager {
 		threadPool = new RaptorThreadPool();
 		sqlThread  = new SqlThread(0, signal, this);
 		inputCredentials();
+		System.out.println(sqlThread);
 		
 		signal.setActiveThread(sqlThread);
 		xml01      = new RaptorThread(1, signal);
@@ -52,7 +53,6 @@ public class RaptorThreadPoolManager {
 	}
 	
 	public void inputCredentials(){
-		
 		
 		while( !validInput){
 			System.out.println("Would you like to launch xmlRaptor y/n");

@@ -2,6 +2,7 @@ package RaptorThreadPool;
 
 import java.util.Random;
 
+import MAIN.Raptor;
 import MAIN.RaptorThreadPoolManager;
 import ThreadPool.CallableWorkerThread;
 import ThreadPool.SQLConnector;
@@ -10,6 +11,7 @@ import ThreadPool.Signal;
 
 public class SqlThread extends CallableWorkerThread{
 	
+	private static final String RaptorSignal = null;
 	public SQLConnectorRaptor sqlConnector;
 	
 	public SqlThread(int workerNumber){
@@ -48,28 +50,28 @@ public class SqlThread extends CallableWorkerThread{
 	//THE CALL METHOD EXECUTES DIRECTLY WHEN THE THREAD RUNS
 	public Integer call(){
 		
+		System.out.print(signal);
+		
+		
 		//should wait on init for the xmlObjects to populate the list<Futures> xmlobjects
 		while(!signal.hasDataToProcess()){
-				synchronized(this){
+			synchronized(this){
 					System.out.println("SQL#"+ workerNumber +" :: " +" is waiting for signal");
 					try {this.wait();} catch (InterruptedException e) {e.printStackTrace();}
-					
-
 			}
 				System.out.println();
 		}
 		
+		
 		System.out.println("SQL#"+ workerNumber +" :: READY!!!!!!!!!!!!!");
-		
-		//Do work here
-		while(!((RaptorSignal)signal).areAllThreadsDone()){
-			testCall();
-		}
-		
+		testCall();
+//		//Do work here
+//		while(!((RaptorSignal)signal).areAllThreadsDone()){
+//			System.out.println( ((RaptorSignal)signal).areAllThreadsDone());
+//			testCall();
+//		}
 		//should close
-		signal.setHasDataToProcess(false);
-		
-		
+//		signal.setHasDataToProcess(false);
 		sqlConnector.closeConnection();
 		return workerNumber;
 	}
