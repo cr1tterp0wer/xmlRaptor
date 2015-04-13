@@ -1,5 +1,6 @@
 package ThreadPool;
 import java.util.ArrayList;
+import java.util.Stack;
 import java.util.concurrent.*;
 
 
@@ -7,22 +8,31 @@ import java.util.concurrent.*;
 public class ThreadPool {
 
     protected ArrayList<CallableWorkerThread> workers; //callable returns a Future obj
-    private Future futures[];
+//    private Future futures[];
+    private Stack<Future> futures;
     private ExecutorService executor;
     
 	public ThreadPool(int numWork){
 		
-		futures        = new Future[numWork];
-		workers        = new ArrayList<CallableWorkerThread>(numWork);
+		futures = new Stack<Future>();
+		workers = new ArrayList<CallableWorkerThread>(numWork);
 		
 		executor = Executors.newCachedThreadPool();
 		
 	}
 
-	public Future[] submitAll(){
-		for(int i =0;i<workers.size();i++){executor.submit(workers.get(i));}
-		return null;
+//	public Future[] submitAll(){
+//		for(int i =0;i<workers.size();i++){
+//		    executor.submit(workers.get(i));
+//		}
+//		return null;
+//	}
+	public void submitAll(){
+	    for(int i =0;i<workers.size();i++){
+            executor.submit(workers.get(i));
+        }
 	}
+	
 	
 	
 	public Future<?> submit(CallableWorkerThread w){return executor.submit(w);}
@@ -32,6 +42,6 @@ public class ThreadPool {
 	public void shutdown(){executor.shutdown();}
 	
 	public int getNumWorkers()    { return workers.size();     }
-	public ArrayList<CallableWorkerThread> getWorkerThread(){ return workers;}	
+	public ArrayList<CallableWorkerThread> getWorkers(){ return workers;}	
 	
 }

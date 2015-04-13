@@ -12,9 +12,7 @@ public class Raptor {
 		pool.init();
 		
 		pool.begin();
-		pool.end();	
-	}
-	public static void print(String s){
-		System.out.println(s);
+		pool.end();
+	
 	}
 }

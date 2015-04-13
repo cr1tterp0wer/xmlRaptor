@@ -2,7 +2,7 @@ package ThreadPool;
 
 public class Signal {
 
-	  protected boolean hasDataToProcess = false;
+	  protected boolean hasDataToProcess = false;  //Do the waiting threads have data to process?
 
 	  public synchronized boolean hasDataToProcess(){
 		  return this.hasDataToProcess;

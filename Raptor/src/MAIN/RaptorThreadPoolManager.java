@@ -1,6 +1,9 @@
 package MAIN;
 
+import java.util.EmptyStackException;
 import java.util.Scanner;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Future;
 
 import RaptorThreadPool.*;
 import ThreadPool.Signal;
@@ -8,86 +11,117 @@ import ThreadPool.ThreadPool;
 
 public class RaptorThreadPoolManager {
 
-	private final int        NUMBER_OF_WORKERS = 4;
-	RaptorSignal             signal;
+	private final int        MIN_NUMBER_OF_WORKERS = 2;
+	private final int        MAX_POSSIBLE_WORKERS  = 4;
+	
 	private RaptorThreadPool threadPool;
-	private SqlThread        sqlThread;
-	private RaptorThread     xml01, xml02, xml03;
+	private int              workerNumber;
 	private String[]         credentials;
 	private final int        NUM_OF_CREDS = 7;
 	private boolean          validInput   = false;
+	private Future<String>[] futures;	
+	private RaptorFileList   filePool;  //Gets the list of files
+	private RaptorSignal     signal;
+	private SqlThread        sqlThread;
+	private CountDownLatch   latch;
+	
 	
 	public RaptorThreadPoolManager(){
-		signal     = new RaptorSignal(NUMBER_OF_WORKERS);
-		threadPool = new RaptorThreadPool(NUMBER_OF_WORKERS);
-		credentials = new String[NUM_OF_CREDS];
+		credentials  = new String[NUM_OF_CREDS];
+		workerNumber = 0;
+		latch        = new CountDownLatch(1);
 	}
 	
 	public void init(){
-		
-		
-		threadPool = new RaptorThreadPool();
-		sqlThread  = new SqlThread(0, signal, this);
-		inputCredentials();
-		System.out.println(sqlThread);
-		
-		signal.setActiveThread(sqlThread);
-		xml01      = new RaptorThread(1, signal);
-		xml01.init(credentials[0]);
-		xml02      = new RaptorThread(2, signal);
-		xml02.init(credentials[0]);
-		xml03      = new RaptorThread(3, signal);
-		xml03.init(credentials[0]);
-		
-		threadPool.addWorker(sqlThread);
-		threadPool.addWorker(xml01);
-		threadPool.addWorker(xml02);
-		threadPool.addWorker(xml03);
+		inputDefualtCredentials();                       //get server credentials
+		filePool   = new RaptorFileList(credentials[0]); //get all the necessary files
+		int index =0;
+		System.out.println("NUMBER OF VALID FILES::"+filePool.getNumValidFiles());
+        if(filePool.getNumValidFiles() <= 0)
+        {
+            throw new EmptyStackException();  //No files? No go.
+        }
+        else if(filePool.getNumValidFiles() < MAX_POSSIBLE_WORKERS){
+            //only launch one xml thread
+            threadPool  = new RaptorThreadPool(MIN_NUMBER_OF_WORKERS);
+            signal      = new RaptorSignal(MIN_NUMBER_OF_WORKERS, this);
+            sqlThread   = new SqlThread(workerNumber++, signal,latch); //Add the sql thread
+            
+            threadPool.addWorker(sqlThread);
+            threadPool.getWorkers().get(index++).init();
+            threadPool.addWorker(new XmlThread(workerNumber++,signal,filePool.getListOfFileNames().pop(),latch));  //pre-load the threads into the pool
+            threadPool.getWorkers().get(index++).init();
+        }
+        else{
+            //Launch 3 xml threads
+            threadPool  = new RaptorThreadPool(MAX_POSSIBLE_WORKERS);   
+            signal      = new RaptorSignal(MAX_POSSIBLE_WORKERS, this);
+            sqlThread   = new SqlThread(workerNumber++, signal,latch); //Add the sql thread
+            
+            threadPool.addWorker(sqlThread);
+            threadPool.addWorker(new XmlThread(workerNumber++,signal, filePool.getListOfFileNames().pop(),latch)); //pre-load the threads into the pool
+            threadPool.addWorker(new XmlThread(workerNumber++,signal, filePool.getListOfFileNames().pop(),latch));
+            threadPool.addWorker(new XmlThread(workerNumber++,signal, filePool.getListOfFileNames().pop(),latch));
+        }
+        initAllThreads();
 	}
 	
 	public void begin(){
-		threadPool.submitAll();
-	}
-	public void end(){
-		threadPool.shutdown();
+	  threadPool.submitAll();
 	}
 	
-	public void inputCredentials(){
-		
-		while( !validInput){
-			System.out.println("Would you like to launch xmlRaptor y/n");
-			
-			Scanner scan = new Scanner(System.in);
-			String input = scan.nextLine();
-			if(input.charAt(0) != 'y'){
-				System.out.println("Exiting...Goodbye");
-				System.exit(1);
-			}
-			
-			System.out.println("please enter PATH:");
-			credentials[0]          = scan.nextLine();
-			System.out.println("please enter XML OBJECT:");
-			credentials[1]          = scan.nextLine();
-			System.out.println("please enter SERVER ADDRESS:");
-			credentials[2]          = scan.nextLine();
-			System.out.println("please enter PORT:");
-			credentials[3]          = scan.nextLine();
-			System.out.println("please enter USERNAME:");
-			credentials[4]          = scan.nextLine();
-			System.out.println("please enter PASS:");
-			credentials[5]          = scan.nextLine();
-			System.out.println("please enter DATABASENAME:");
-			credentials[6]          = scan.nextLine();
-			
-			sqlThread.init(credentials);
-		}
-		
-		
-	}
+	public void end(){	}
 	
-	public void setValidInput(boolean b){validInput = b;}
-	public void setRaptorSignal(Signal s){signal = (RaptorSignal)s;}
-	public void setTheadPool(ThreadPool tp){threadPool = (RaptorThreadPool)tp;}
-	public void automatedLaunch(){}
+	public void generateWorker(){}
+	
+	
+	public void setValidInput(boolean b){    validInput = b;}
+	public boolean getValidInput()      { return validInput;}
+	
+//	##################################################################### Private methods
+	private void inputCredentials(){
+	    
+	    while( !validInput){
+            System.out.println("Would you like to launch xmlRaptor y/n");
+            
+            Scanner scan = new Scanner(System.in);
+            String input = scan.nextLine();
+            if(input.charAt(0) != 'y'){
+                System.out.println("Exiting...Goodbye");
+                System.exit(1);
+            }
+            
+            System.out.println("please enter PATH:");
+            credentials[0]          = scan.nextLine();
+            System.out.println("please enter XML OBJECT:");
+            credentials[1]          = scan.nextLine();
+            System.out.println("please enter SERVER ADDRESS:");
+            credentials[2]          = scan.nextLine();
+            System.out.println("please enter PORT:");
+            credentials[3]          = scan.nextLine();
+            System.out.println("please enter USERNAME:");
+            credentials[4]          = scan.nextLine();
+            System.out.println("please enter PASS:");
+            credentials[5]          = scan.nextLine();
+            System.out.println("please enter DATABASENAME:");
+            credentials[6]          = scan.nextLine();
+            
+          //  sqlThread.init(credentials);
+        }
+	 }
+	 private void inputDefualtCredentials(){
+
+	     credentials[0] = "./metadata/TEST";
+	     credentials[1] = "filing";
+	     credentials[2] = "localhost";
+	     credentials[3] = "3306";
+	     credentials[4] = "root";
+	     credentials[5] = "critterpower";       
+	     credentials[6] = "test";       
+	}
+	private void initAllThreads(){
+	    for(int i = 0;i<threadPool.getNumWorkers();i++)
+	        threadPool.getWorkers().get(i).init();
+	}
 	
 }
