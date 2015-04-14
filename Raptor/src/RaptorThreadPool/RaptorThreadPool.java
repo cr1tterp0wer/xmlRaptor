@@ -34,6 +34,6 @@ public class RaptorThreadPool extends ThreadPool{
 		return null;
 	}
 	
-	
+	public void removeWorker(CallableWorkerThread worker){workers.remove(worker);}
 	public int getCapacity(){return capacity;}
 }

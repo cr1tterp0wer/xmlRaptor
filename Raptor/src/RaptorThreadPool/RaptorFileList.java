@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Stack;
 
@@ -14,40 +15,38 @@ public class RaptorFileList {
 
     private String  folderPath;
     private File    folder;
-    private int     numFiles;
     private File[]  files;                //array of files
     private Stack<String>    fileNames;   //Stack of file names ::String
-    private ArrayList<File>  listOfFiles; //arrayList of ALL files in dir
-    private boolean          canParse;    //can we parse this folder?
-    private String           extension;   //file extension buffer
+    private LinkedList<File> listOfFiles; //arrayList of ALL files in dir
     
     public RaptorFileList(String dir){
         folderPath   = dir;
         folder       = new File(folderPath);   
+        files        = folder.listFiles(); //put files in folder
         fileNames    = new Stack<String>();  
-        numFiles     = 0;
-        canParse     = false;
-        
-        files = folder.listFiles();
-        listOfFiles  = toArrayList(files);
+        listOfFiles  = new LinkedList();
         getListOfParsableFiles();
     }
     
     private List<File> getListOfParsableFiles(){
-        numFiles=0;
         
-        for(File file: files){
+        //put files into linked list
+        for(int i=0;i<files.length;i++)
+        	listOfFiles.add(files[i]);
+        
+        //Filter out Directories
+        for(File file: files){   
             if(file.isDirectory())
-                continue;
+            	listOfFiles.remove(file);
             else
-                listOfFiles.add(file);
+                continue;
         }
         
+        //Filter out non-xml files
         if(!(listOfFiles==null) && !(listOfFiles.size() <= 0)){
             for(int i = 0; i < listOfFiles.size(); i++){
                 if(((File) listOfFiles.get(i)).isFile() && getExtension(listOfFiles.get(i).toString()).equalsIgnoreCase("xml")){
                     fileNames.push(listOfFiles.get(i).toString());
-                    numFiles++;
                 }
                 else
                     listOfFiles.remove(i);
@@ -56,9 +55,11 @@ public class RaptorFileList {
         return listOfFiles;
     }
     
-    public int       getNumValidFiles(){ return numFiles;    }
-    public List<File> getListOfFiles(){  return listOfFiles; }
-    public Stack<String> getListOfFileNames(){ return fileNames;}
+    public List<File> getFiles(){  return listOfFiles; }  //returns list of File OBJS
+    public Stack<String> getFileNameStack(){ return fileNames;}
+    
+    
+//	##################Private methods##################  //
     private String getExtension(String ext){
         String extension = "";
         int i = ext.lastIndexOf('.');
@@ -66,18 +67,5 @@ public class RaptorFileList {
         
         return extension;
     }
-    
-    private ArrayList<File> toArrayList(File[] f){
-        ArrayList<File> result = new ArrayList<File>();
-        
-        for(int i=0;i<f.length;i++)
-            result.add(f[i]);
-        
-        return result;
-    }
-    
-    
-  
-    
     
 }

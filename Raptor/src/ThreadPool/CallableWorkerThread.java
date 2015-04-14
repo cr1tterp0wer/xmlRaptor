@@ -7,8 +7,6 @@ public class CallableWorkerThread implements Callable<Object> {
 
 	protected Signal signal;
 	protected int workerNumber;
-	protected CountDownLatch latch;
-	
 	
 	public CallableWorkerThread(int id){
 		workerNumber = id;
@@ -21,7 +19,6 @@ public class CallableWorkerThread implements Callable<Object> {
 	{
 	    signal       = s;
 	    workerNumber = id;
-	    latch        = l;
 	}
 	
 	public void init(){}
