@@ -19,6 +19,13 @@ public class XmlThread extends CallableWorkerThread {
         this.file   = new File(f);
     }
     
+    public XmlThread(int workerNumber, Signal s, String f){
+        super(workerNumber, s);
+        this.signal = (RaptorSignal) s;
+        this.file   = new File(f);
+    }
+    
+    
     @Override
     public Integer call(){       
         testCall();
@@ -28,11 +35,12 @@ public class XmlThread extends CallableWorkerThread {
     }
     
     public void finish(){
-//        if(latch.getCount() > 0)
-//            latch.countDown();
+        if(latch.getCount() > 0)
+            latch.countDown();
         System.out.println("LatchCount::" +this.latch.getCount());
         
-        System.out.println(this.toString() + ":: Finished()");
+        //tell the signal we're done
+        ((RaptorSignal)signal).notifyAndSpawn();
         
     }
    
@@ -50,6 +58,4 @@ public class XmlThread extends CallableWorkerThread {
             
         }   
     }
-    
-
 }

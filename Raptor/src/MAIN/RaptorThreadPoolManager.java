@@ -2,8 +2,10 @@ package MAIN;
 
 import java.util.EmptyStackException;
 import java.util.Scanner;
+import java.util.Stack;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 import RaptorThreadPool.*;
 import ThreadPool.Signal;
@@ -14,24 +16,28 @@ public class RaptorThreadPoolManager {
 	private final int        MIN_NUMBER_OF_WORKERS = 2;
 	private final int        MAX_POSSIBLE_WORKERS  = 4;
 	
-	private RaptorThreadPool threadPool;
-	private int              workerNumber;
-	private String[]         credentials;
-	private final int        NUM_OF_CREDS = 7;
-	private boolean          validInput   = false;
-	private Future<String>[] futures;	
+	public volatile  Stack<Future> futures;               //futures to be accessed by sqlThread
+	public int                     workerNumber;          //Worker Thread ID
+	private RaptorThreadPool       threadPool; 
+	private String[]               credentials;   
+	private final int              NUM_OF_CREDS = 7;      //number of arguments credentials can have
+	private boolean                validInput   = false;  //make sure input from user for credentials is valid
+
+	
 	private RaptorFileList   filePool;  //Gets the list of files
 	private RaptorSignal     signal;
 	private SqlThread        sqlThread;
-	private CountDownLatch   latch;
+	private CountDownLatch   sqlStartupLatch; //sqlThread to begin when the first object is available
 	
 	
 	public RaptorThreadPoolManager(){
-		credentials  = new String[NUM_OF_CREDS];
-		workerNumber = 0;
-		latch        = new CountDownLatch(1);
+		credentials      = new String[NUM_OF_CREDS];
+		workerNumber     = 0;
+		sqlStartupLatch  = new CountDownLatch(1);
 	}
 	
+	
+	//Initialize the first threads
 	public void init(){
 		inputDefualtCredentials();                       //get server credentials
 		filePool   = new RaptorFileList(credentials[0]); //get all the necessary files
@@ -45,40 +51,42 @@ public class RaptorThreadPoolManager {
             //only launch one xml thread
             threadPool  = new RaptorThreadPool(MIN_NUMBER_OF_WORKERS);
             signal      = new RaptorSignal(MIN_NUMBER_OF_WORKERS, this);
-            sqlThread   = new SqlThread(workerNumber++, signal,latch); //Add the sql thread
+            sqlThread   = new SqlThread(workerNumber++, signal, sqlStartupLatch, this); //Add the sql thread
             
             threadPool.addWorker(sqlThread);
             threadPool.getWorkers().get(index++).init();
-            threadPool.addWorker(new XmlThread(workerNumber++,signal,filePool.getListOfFileNames().pop(),latch));  //pre-load the threads into the pool
+            threadPool.addWorker(new XmlThread(workerNumber++,signal,filePool.getListOfFileNames().pop(), sqlStartupLatch));  //pre-load the threads into the pool
             threadPool.getWorkers().get(index++).init();
         }
         else{
             //Launch 3 xml threads
             threadPool  = new RaptorThreadPool(MAX_POSSIBLE_WORKERS);   
             signal      = new RaptorSignal(MAX_POSSIBLE_WORKERS, this);
-            sqlThread   = new SqlThread(workerNumber++, signal,latch); //Add the sql thread
+            sqlThread   = new SqlThread(workerNumber++, signal,sqlStartupLatch, this); //Add the sql thread
             
             threadPool.addWorker(sqlThread);
-            threadPool.addWorker(new XmlThread(workerNumber++,signal, filePool.getListOfFileNames().pop(),latch)); //pre-load the threads into the pool
-            threadPool.addWorker(new XmlThread(workerNumber++,signal, filePool.getListOfFileNames().pop(),latch));
-            threadPool.addWorker(new XmlThread(workerNumber++,signal, filePool.getListOfFileNames().pop(),latch));
+            threadPool.addWorker(new XmlThread(workerNumber++, signal, filePool.getListOfFileNames().pop(), sqlStartupLatch)); //pre-load the threads into the pool
+            threadPool.addWorker(new XmlThread(workerNumber++, signal, filePool.getListOfFileNames().pop(), sqlStartupLatch));
+            threadPool.addWorker(new XmlThread(workerNumber++, signal, filePool.getListOfFileNames().pop(), sqlStartupLatch));
         }
         initAllThreads();
 	}
 	
 	public void begin(){
-	  threadPool.submitAll();
+	 futures = threadPool.submitAll();
 	}
 	
-	public void end(){	}
+	public void end(){
+      
+	}
 	
-	public void generateWorker(){}
+	public void    setValidInput(boolean b){         validInput = b;}
+	public boolean getValidInput()      {            return validInput;}
+	public         RaptorThreadPool getThreadPool(){ return threadPool;}
+	public boolean isListOfFilesEmpty(){             return filePool.getListOfFileNames().isEmpty(); }
+	public RaptorFileList getFilePool(){             return filePool;}
 	
-	
-	public void setValidInput(boolean b){    validInput = b;}
-	public boolean getValidInput()      { return validInput;}
-	
-//	##################################################################### Private methods
+//	##################Private methods##################  //
 	private void inputCredentials(){
 	    
 	    while( !validInput){
@@ -123,5 +131,9 @@ public class RaptorThreadPoolManager {
 	    for(int i = 0;i<threadPool.getNumWorkers();i++)
 	        threadPool.getWorkers().get(i).init();
 	}
+	
+	
+	
+	
 	
 }

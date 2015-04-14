@@ -16,30 +16,23 @@ public class ThreadPool {
 		
 		futures = new Stack<Future>();
 		workers = new ArrayList<CallableWorkerThread>(numWork);
-		
-		executor = Executors.newCachedThreadPool();
+		executor = Executors.newFixedThreadPool(numWork);
 		
 	}
 
-//	public Future[] submitAll(){
-//		for(int i =0;i<workers.size();i++){
-//		    executor.submit(workers.get(i));
-//		}
-//		return null;
-//	}
-	public void submitAll(){
-	    for(int i =0;i<workers.size();i++){
-            executor.submit(workers.get(i));
-        }
+	public Stack<Future> submitAll(){
+		for(int i =0;i<workers.size();i++){
+		   futures.add( executor.submit(workers.get(i))); //submit the workers into the executor
+		}
+		return futures;
 	}
-	
-	
-	
+
 	public Future<?> submit(CallableWorkerThread w){return executor.submit(w);}
 
-	public void addWorker(CallableWorkerThread wt){workers.add(wt);}
+	public CallableWorkerThread addWorker(CallableWorkerThread wt){workers.add(wt); return wt;}
 	public void removeWorkerAt(int i){ workers.remove(i);}
 	public void shutdown(){executor.shutdown();}
+	public ExecutorService getExecutor(){return executor;}
 	
 	public int getNumWorkers()    { return workers.size();     }
 	public ArrayList<CallableWorkerThread> getWorkers(){ return workers;}	
