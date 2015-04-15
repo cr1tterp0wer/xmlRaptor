@@ -28,7 +28,6 @@ public class RaptorSignal extends Signal{
     		 String fileName  = rtpm.getFilePool().getFileNameStack().pop();
     		XmlThread x = (XmlThread)(rtp.addWorker(new XmlThread(workerID, this, fileName)));
     		rtp.submit(x);
-
         }
         else{
             System.out.println("All Files Parsed::");

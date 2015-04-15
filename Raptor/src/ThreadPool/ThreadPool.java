@@ -18,6 +18,7 @@ public class ThreadPool {
 		executor   = Executors.newCachedThreadPool();
 	}
 
+	//should be a wrapper and call submit() for every element-> add to main sqlThread
 	public LinkedList<Future> submitAll(){
 		for(int i =0;i<workers.size();i++){
 		   futures.add( executor.submit(workers.get(i))); //submit the workers into the executor

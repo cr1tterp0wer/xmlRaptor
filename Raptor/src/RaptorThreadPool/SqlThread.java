@@ -46,12 +46,12 @@ public class SqlThread extends CallableWorkerThread{
        // testCall();
         //if futures are empty latch.await, latch = new latch(1)
         //check list size
-        while(!rtpm.getFilePool().getFileNameStack().isEmpty()){
-        		try {
-					f.add((Integer) futures.pop().get()); //TODO: fix futures
-				} catch (InterruptedException e) {e.printStackTrace();}
-        		  catch (ExecutionException e) {e.printStackTrace();}
-        }
+//        while(!rtpm.getFilePool().getFileNameStack().isEmpty()){
+//        		try {
+//					f.add((Integer) futures.pop().get()); //TODO: fix futures
+//				} catch (InterruptedException e) {e.printStackTrace();}
+//        		  catch (ExecutionException e) {e.printStackTrace();}
+//        }
 
 
         finish();
