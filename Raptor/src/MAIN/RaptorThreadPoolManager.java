@@ -1,36 +1,34 @@
 package MAIN;
 
 import java.util.EmptyStackException;
-import java.util.LinkedList;
 import java.util.Scanner;
-import java.util.concurrent.Future;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import RaptorThreadPool.RaptorFileList;
-import RaptorThreadPool.RaptorSignal;
-import RaptorThreadPool.RaptorThreadPool;
-import RaptorThreadPool.SqlThread;
-import RaptorThreadPool.XmlThread;
+import RaptorThreadPool.SqlWorker;
+import RaptorThreadPool.ThreadSpawner;
+import RaptorThreadPool.XmlWorker;
+
 
 public class RaptorThreadPoolManager {
 
-	private final int        MIN_NUMBER_OF_WORKERS = 2;
-	private final int        MAX_POSSIBLE_WORKERS  = 4;
 	
-	public volatile  LinkedList<Future> futures;               //futures to be accessed by sqlThread
-	public int                     workerNumber;          //Worker Thread ID
-	private RaptorThreadPool       threadPool; 
-	private String[]               credentials;   
-	private final int              NUM_OF_CREDS = 7;      //number of arguments credentials can have
-	private boolean                validInput   = false;  //make sure input from user for credentials is valid
+
+	private String[]                  credentials;   
+	private final int                 NUM_OF_CREDS = 7;      //number of arguments credentials can have
+	private boolean                   validInput   = false;  //make sure input from user for credentials is valid
 	
-	private volatile RaptorFileList   filePool;  //Gets the list of files
-	private volatile RaptorSignal     signal;
-	private SqlThread                 sqlThread;
+	private final int                 MAX_NUM_WORKERS  = 4;
+	public  volatile RaptorFileList   filePool;  //Gets the list of files
+	private volatile ThreadSpawner    spawner;
+
 	
 	
 	public RaptorThreadPoolManager(){
 		credentials      = new String[NUM_OF_CREDS];
-		workerNumber     = 0;
+		spawner          = new ThreadSpawner(MAX_NUM_WORKERS, this);
 	}
 	
 	
@@ -40,51 +38,30 @@ public class RaptorThreadPoolManager {
 		filePool   = new RaptorFileList(credentials[0]); //get all the necessary files
 		
 		System.out.println("NUMBER OF VALID FILES BEGIN::"+filePool.getFileNameStack().size());
-			
 		
-		if(filePool.getFileNameStack().isEmpty())
-        {
+		if(filePool.getFileNameStack().isEmpty())        
             throw new EmptyStackException();  //No files? No go.
-        }
-        else if(filePool.getFileNameStack().size() < MAX_POSSIBLE_WORKERS){
-            //only launch one xml thread
-            threadPool  = new RaptorThreadPool(MIN_NUMBER_OF_WORKERS);
-            signal      = new RaptorSignal(MIN_NUMBER_OF_WORKERS, this);
-            sqlThread   = new SqlThread(workerNumber++, signal, this); //Add the sql thread
-            
-            threadPool.addWorker(sqlThread);
-            threadPool.addWorker(new XmlThread(workerNumber++,signal,filePool.getFileNameStack().pop() ));  //pre-load the threads into the pool
-        }
-        else{
-            //Launch 3 xml threads
-            threadPool  = new RaptorThreadPool(MAX_POSSIBLE_WORKERS);   
-            signal      = new RaptorSignal(MAX_POSSIBLE_WORKERS, this);
-            sqlThread   = new SqlThread(workerNumber++, signal, this); //Add the sql thread
-            
-            threadPool.addWorker(sqlThread);
-            threadPool.addWorker(new XmlThread(workerNumber++, signal, filePool.getFileNameStack().pop() )); //pre-load the threads into the pool
-            threadPool.addWorker(new XmlThread(workerNumber++, signal, filePool.getFileNameStack().pop() ));
-            threadPool.addWorker(new XmlThread(workerNumber++, signal, filePool.getFileNameStack().pop() ));
-            
-        }
-        initAllThreads();
+		
+		//INIT the spawner()!
+		spawner.init();
 	}
 	
 	public void begin(){
-		futures = threadPool.submitAll();
 	}
 	
 	public void end(){
+	    //TODO:close up the threads
 	}
 	
 	public void    setValidInput(boolean b)        { validInput = b;}
 	public boolean getValidInput()                 { return validInput;}
-	public         RaptorThreadPool getThreadPool(){ return threadPool;}
 	public int     listOfFilesSize()			   { return filePool.getFileNameStack().size(); }
 	public         RaptorFileList getFilePool()    { return filePool;}
 	
 	
 //	##################Private methods##################  //
+	
+	
 	private void inputCredentials(){
 	    
 	    while( !validInput){
@@ -125,13 +102,4 @@ public class RaptorThreadPoolManager {
 	     credentials[5] = "critterpower";       
 	     credentials[6] = "test";       
 	}
-	private void initAllThreads(){
-	    for(int i = 0;i<threadPool.getNumWorkers();i++)
-	        threadPool.getWorkers().get(i).init();
-	}
-	
-	
-	
-	
-	
 }

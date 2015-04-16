@@ -5,37 +5,34 @@ import java.util.Random;
 import java.util.concurrent.CountDownLatch;
 
 import ThreadPool.CallableWorkerThread;
-import ThreadPool.Signal;
 
-public class XmlThread extends CallableWorkerThread {
+public class XmlWorker extends CallableWorkerThread {
     
     private String path;
     private File   file;
 	CountDownLatch dataLatch;
+	SqlWorker      sqlWorker;
   
-    public XmlThread(int workerNumber, Signal s, String f){
+    public XmlWorker(int workerNumber, ThreadSpawner s, String f){
         super(workerNumber, s);
-        this.signal = (RaptorSignal) s;
+        this.spawner =  s;
         this.file   = new File(f);
-        
-        
     }
    
     @Override
-    public Integer call(){       
+    public CallableWorkerThread call(){       
         testCall();
         this.finish();
-        return new Integer(999999999);  //return the future object, should be an xmlBLOB
+        sqlWorker  = new SqlWorker( this.workerID, this.spawner );
+        return sqlWorker;  //return the future object, should be an xmlBLOB
     }
     
     public void finish(){
 
-
-        ((RaptorSignal)signal).notifyAndSpawn(dataLatch);
+        spawner.notifyAndSpawn(dataLatch);
 
         if(dataLatch.getCount() > 0)
         	dataLatch.countDown();
-        
     }
    
     public void testCall(){
@@ -43,7 +40,7 @@ public class XmlThread extends CallableWorkerThread {
         
         for(int i=0;i< 100;i++){
             int   delta = r.nextInt(200);
-            System.out.println("xml#"+ workerNumber +" :: " + file);
+            System.out.println("xml#"+ workerID +" :: " + file);
             try {
                 Thread.sleep(delta);    
             } catch (InterruptedException e) {

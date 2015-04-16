@@ -3,22 +3,25 @@ package ThreadPool;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
 
+import sun.misc.Signal;
+import RaptorThreadPool.ThreadSpawner;
+
 public class CallableWorkerThread implements Callable<Object> {
 
-	protected Signal signal;
-	protected int workerNumber;
+	protected ThreadSpawner spawner;
+	protected int workerID;
 	
 	public CallableWorkerThread(int id){
-		workerNumber = id;
+		workerID = id;
 	}
-	public CallableWorkerThread(int id, Signal s){
-		signal = s;
-		workerNumber = id;
+	public CallableWorkerThread(int id, ThreadSpawner s){
+	    spawner = s;
+		workerID = id;
 	}
-	public CallableWorkerThread(int id, Signal s, CountDownLatch l)
+	public CallableWorkerThread(int id, ThreadSpawner s, CountDownLatch l)
 	{
-	    signal       = s;
-	    workerNumber = id;
+	    spawner       = s;
+	    workerID = id;
 	}
 	
 	public void init(){}
@@ -31,5 +34,5 @@ public class CallableWorkerThread implements Callable<Object> {
 		return null;
 	}
 	
-	public int getWorkerNumber(){return workerNumber;}
+	public int getWorkerNumber(){return workerID;}
 }
