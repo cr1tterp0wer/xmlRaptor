@@ -26,14 +26,12 @@ public class SqlWorker implements Runnable{
     public void run(){
     	testCall();
     	System.out.println(this);
+    	finish();
     }
 
     public void finish(){
-       System.out.println(this.toString());
-       //TODO: shutdown sqlPOOL
-       if(spawner.getFinishedSqlLength() == spawner.getManager().getFilePool().getFiles().size()){
-           
-       }
+       spawner.incrementFinishedSql();
+       spawner.shutdownSqlPool();
     }
    
     public void testCall(){

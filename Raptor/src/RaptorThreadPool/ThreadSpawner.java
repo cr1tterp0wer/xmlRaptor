@@ -21,6 +21,9 @@ public class ThreadSpawner {
     private ThreadPoolExecutor sqlExecutor;
     private BlockingQueue<Runnable> blockingQueue;
     private int      workerID = 0;
+    private int      numberOfFiles;
+    private int      finishedSql=0;
+    
    
     //this should spawn all the necessary threads and create a new sql thread outright!
     
@@ -30,10 +33,9 @@ public class ThreadSpawner {
         xmlExecutor = Executors.newFixedThreadPool(numberOfThreads);
         blockingQueue = new ArrayBlockingQueue<Runnable>(100);
         sqlExecutor   = new ThreadPoolExecutor(10,20,0, TimeUnit.MINUTES, blockingQueue);
-        
-        
     }
     public void init(){
+        numberOfFiles = manager.getFilePool().getFiles().size();
         xmlExecutor.execute(new XmlWorker(workerID++, this, manager.filePool.getFileNameStack().pop() ));
         xmlExecutor.execute(new XmlWorker(workerID++, this, manager.filePool.getFileNameStack().pop() ));
         xmlExecutor.execute(new XmlWorker(workerID++, this, manager.filePool.getFileNameStack().pop() ));
@@ -56,10 +58,19 @@ public class ThreadSpawner {
         ((ExecutorService) xmlExecutor).shutdown();
         
     }
-    public void shutdownSql(){
+    private void shutdownSql(){
         sqlExecutor.shutdown();
+    }
+    
+    
+    public synchronized void shutdownSqlPool(){  
+        if(finishedSql >= numberOfFiles)
+            shutdownSql();
     }
     public Executor getSqlExecutor(){return sqlExecutor;}
     public RaptorThreadPoolManager getManager(){return manager;}
+    public synchronized void incrementFinishedSql(){finishedSql++;}
+    public synchronized int getNumberOfFiles(){return numberOfFiles;}
+    public synchronized int getNumFinishedSql(){return finishedSql;}
     
 }
