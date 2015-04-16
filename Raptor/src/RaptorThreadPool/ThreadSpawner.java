@@ -1,72 +1,65 @@
 package RaptorThreadPool;
 
-import java.util.ArrayList;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutionException;
+
+
+import java.util.Stack;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import MAIN.RaptorThreadPoolManager;
 
 public class ThreadSpawner {
 
-    private RaptorThreadPoolManager rtpm;   
-    private Executor          sqlThreads;
-    private ExecutorService   xmlThreads;
-    private int               numThreads;        
-    private ArrayList<Future> sqlFutures;
-    public int                workerID;          //Worker Thread ID
-    public int                currentIndex = 0;
-    
+    private RaptorThreadPoolManager manager;
+    private volatile Stack<Object>  dataList;
+    private Executor xmlExecutor;
+    private ThreadPoolExecutor sqlExecutor;
+    private BlockingQueue<Runnable> blockingQueue;
+    private int      workerID = 0;
+   
     //this should spawn all the necessary threads and create a new sql thread outright!
     
-    public ThreadSpawner(int numberOfThreads, RaptorThreadPoolManager manager){
-        this.rtpm        = manager;
-        numThreads       = numberOfThreads; 
-        sqlThreads       = Executors.newSingleThreadExecutor();
-        xmlThreads       = Executors.newFixedThreadPool(numThreads);
-        workerID         = 0;
-        sqlFutures       = new ArrayList<Future>(numThreads);
+    public ThreadSpawner(int numberOfThreads, RaptorThreadPoolManager m){
+        manager = m;
+        dataList = new Stack<Object>();
+        xmlExecutor = Executors.newFixedThreadPool(numberOfThreads);
+        blockingQueue = new ArrayBlockingQueue<Runnable>(100);
+        sqlExecutor   = new ThreadPoolExecutor(10,20,0, TimeUnit.MINUTES, blockingQueue);
+        
+        
     }
-    
     public void init(){
-        for(;currentIndex<numThreads;currentIndex++){
-          sqlFutures.add(xmlThreads.submit(new XmlWorker( workerID++, this, this.rtpm.filePool.getFileNameStack().pop())) );
-        }
-        
+        xmlExecutor.execute(new XmlWorker(workerID++, this, manager.filePool.getFileNameStack().pop() ));
+        xmlExecutor.execute(new XmlWorker(workerID++, this, manager.filePool.getFileNameStack().pop() ));
+        xmlExecutor.execute(new XmlWorker(workerID++, this, manager.filePool.getFileNameStack().pop() ));
+        xmlExecutor.execute(new XmlWorker(workerID++, this, manager.filePool.getFileNameStack().pop() ));
     }
+
     
-    //Spawns xmlThreads if the fileList still have files left to process
-    public void  notifyAndSpawn(){
-        int    workerID  = this.workerID++;
+    public void start(){
         
-        System.out.println(sqlFutures.get(currentIndex).toString() + "::Current Index::" + currentIndex);
         
-      
-        //see if there are any files left to parse,spawn 
-        if(!(rtpm.getFilePool().getFileNameStack().isEmpty())){
-            sqlFutures.add(xmlThreads.submit(new XmlWorker( workerID++, this, this.rtpm.filePool.getFileNameStack().pop())) );
-            currentIndex++;
-            System.out.println(sqlFutures.get(currentIndex).toString() + "::Current Index::" + currentIndex);
-            try {sqlThreads.execute((Runnable) sqlFutures.get(currentIndex).get());}
-            catch (InterruptedException e){e.printStackTrace();}
-            catch (ExecutionException e){e.printStackTrace();}
-            
+        while(!(manager.filePool.getFileNameStack().isEmpty()) ){
+            xmlExecutor.execute(new XmlWorker(workerID++, this, manager.filePool.getFileNameStack().pop() ));
         }
-        else{
-            System.out.println("All Files Parsed::");
-            xmlThreads.shutdown(); 
-       }
+        shutdownXML();
 
     }
     
     
-    
-    
-    
-    
-    
+    public void shutdownXML(){
+        ((ExecutorService) xmlExecutor).shutdown();
+        
+    }
+    public void shutdownSql(){
+        sqlExecutor.shutdown();
+    }
+    public Executor getSqlExecutor(){return sqlExecutor;}
+    public RaptorThreadPoolManager getManager(){return manager;}
     
 }

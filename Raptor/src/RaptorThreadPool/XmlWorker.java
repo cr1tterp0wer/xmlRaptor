@@ -7,34 +7,40 @@ import java.util.concurrent.CountDownLatch;
 import MAIN.RaptorThreadPoolManager;
 import ThreadPool.CallableWorkerThread;
 
-public class XmlWorker extends CallableWorkerThread {
+public class XmlWorker implements Runnable {
     
+    private int    workerID;
     private String path;
     private File   file;
-	SqlWorker      sqlWorker;
+	private SqlWorker     sqlWorker;
+	private ThreadSpawner spawner;
+	private Object data;
+	
     
-  
     public XmlWorker(int workerNumber, ThreadSpawner s, String f){
-        super(workerNumber, s);
+        workerID = workerNumber;
         
         this.spawner =  s;
         this.file   = new File(f);
     }
    
-    @Override
-    public Runnable call(){       
+    public void run(){       
         testCall();
 //        this.finish();
-        Object obj = new Object();
-        sqlWorker  = new SqlWorker( this.workerID, this.spawner, obj );
-        this.finish();
-        return sqlWorker;  //return the future object, should be an xmlBLOB
+     //   finish();
+        
+       data = new Object();
+       // sqlWorker  = new SqlWorker( this.workerID, this.spawner, obj );
+        finish();
+       
     }
     
-    public void finish(){
-    	this.spawner.notifyAndSpawn();
-    	System.out.println(this + "::Done");
-    	
+    
+    
+    private void finish(){
+        System.out.println(this + "::Done");   
+        sqlWorker = new SqlWorker(workerID, spawner, data);
+        spawner.getSqlExecutor().execute(sqlWorker);
     }
    
     public void testCall(){

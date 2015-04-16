@@ -18,15 +18,12 @@ public class RaptorThreadPoolManager {
 	public  volatile RaptorFileList   filePool;  //Gets the list of files
 	private volatile ThreadSpawner    spawner;
 
-	
-	
 	public RaptorThreadPoolManager(){
 		credentials      = new String[NUM_OF_CREDS];
 		spawner          = new ThreadSpawner(MAX_NUM_WORKERS, this);
 		connector        = new SQLConnectorRaptor(this);
 	}
-	
-	
+
 	//Initialize the first threads
 	public void init(){
 		inputDefualtCredentials();                       //get server credentials
@@ -45,6 +42,7 @@ public class RaptorThreadPoolManager {
 		connector.connect(credentials[0],credentials[1],credentials[2],
 				          credentials[3],credentials[4],credentials[5],
 				          credentials[6]);
+		spawner.start();
 	}
 	
 	public void end(){
@@ -56,9 +54,7 @@ public class RaptorThreadPoolManager {
 	public int     listOfFilesSize()			   { return filePool.getFileNameStack().size(); }
 	public         RaptorFileList getFilePool()    { return filePool;}
 	
-	
 //	##################Private methods##################  //
-	
 	
 	private void inputCredentials(){
 	    

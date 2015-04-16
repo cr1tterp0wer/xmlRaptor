@@ -1,33 +1,27 @@
 package RaptorThreadPool;
 
 
-import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.Random;
-import java.util.concurrent.Future;
-
-import MAIN.RaptorThreadPoolManager;
-import ThreadPool.CallableWorkerThread;
+import java.util.concurrent.Executor;
 
 public class SqlWorker implements Runnable{
 
-    private int workerID;
-   
-
+ 
     private Object obj;
+    private int    workerID;
+    private ThreadSpawner spawner;
     
     public SQLConnectorRaptor sqlConnector;
    
 
     //SHOULD SPAWN WITH XMLOBJECT!
-    public SqlWorker(int workerNum, ThreadSpawner s, Object obj){
-    	
-        workerID   = workerNum;
+    public SqlWorker(int id, ThreadSpawner s, Object obj){
         this.obj   = obj;
-        
+        workerID =id;
+        spawner = s;
+    
     }
     
-
     @Override
     public void run(){
     	testCall();
@@ -36,6 +30,10 @@ public class SqlWorker implements Runnable{
 
     public void finish(){
        System.out.println(this.toString());
+       //TODO: shutdown sqlPOOL
+       if(spawner.getFinishedSqlLength() == spawner.getManager().getFilePool().getFiles().size()){
+           
+       }
     }
    
     public void testCall(){
@@ -43,13 +41,12 @@ public class SqlWorker implements Runnable{
         
         for(int i=0;i< 100;i++){
             int   delta = r.nextInt(100);
-            System.out.println("sql#"+ this.workerID +" :: " +i);
+            System.out.println("sql#"+ workerID +" :: " +i);
             try {
                 Thread.sleep(delta);    
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            
         }   
     }
 
