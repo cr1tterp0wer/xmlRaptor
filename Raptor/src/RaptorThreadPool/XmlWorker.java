@@ -23,7 +23,8 @@ public class XmlWorker extends CallableWorkerThread {
     public CallableWorkerThread call(){       
         testCall();
         this.finish();
-        sqlWorker  = new SqlWorker( this.workerID, this.spawner );
+        Object obj = new Object();
+        sqlWorker  = new SqlWorker( this.workerID, this.spawner, obj );
         return sqlWorker;  //return the future object, should be an xmlBLOB
     }
     
