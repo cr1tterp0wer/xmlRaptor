@@ -4,17 +4,19 @@ import java.io.File;
 import java.util.Random;
 import java.util.concurrent.CountDownLatch;
 
+import MAIN.RaptorThreadPoolManager;
 import ThreadPool.CallableWorkerThread;
 
 public class XmlWorker extends CallableWorkerThread {
     
     private String path;
     private File   file;
-	CountDownLatch dataLatch;
 	SqlWorker      sqlWorker;
+    
   
     public XmlWorker(int workerNumber, ThreadSpawner s, String f){
         super(workerNumber, s);
+        
         this.spawner =  s;
         this.file   = new File(f);
     }
@@ -25,10 +27,15 @@ public class XmlWorker extends CallableWorkerThread {
 //        this.finish();
         Object obj = new Object();
         sqlWorker  = new SqlWorker( this.workerID, this.spawner, obj );
+        this.finish();
         return sqlWorker;  //return the future object, should be an xmlBLOB
     }
     
-    public void finish(){}
+    public void finish(){
+    	this.spawner.notifyAndSpawn();
+    	System.out.println(this + "::Done");
+    	
+    }
    
     public void testCall(){
         Random r    = new Random();

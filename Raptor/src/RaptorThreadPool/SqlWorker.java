@@ -13,7 +13,7 @@ public class SqlWorker implements Runnable{
 
     private int workerID;
    
-    private RaptorThreadPoolManager rtpm;
+
     private Object obj;
     
     public SQLConnectorRaptor sqlConnector;
@@ -23,15 +23,15 @@ public class SqlWorker implements Runnable{
     public SqlWorker(int workerNum, ThreadSpawner s, Object obj){
     	
         workerID   = workerNum;
-        
-        this.rtpm  = rtpm;
         this.obj   = obj;
+        
     }
     
 
     @Override
     public void run(){
     	testCall();
+    	System.out.println(this);
     }
 
     public void finish(){

@@ -16,8 +16,9 @@ public class ThreadSpawner {
     private Executor          sqlThreads;
     private ExecutorService   xmlThreads;
     private int               numThreads;        
-    private ArrayList<Future> sqlWorkers;
+    private ArrayList<Future> sqlFutures;
     public int                workerID;          //Worker Thread ID
+    public int                currentIndex = 0;
     
     //this should spawn all the necessary threads and create a new sql thread outright!
     
@@ -27,50 +28,38 @@ public class ThreadSpawner {
         sqlThreads       = Executors.newSingleThreadExecutor();
         xmlThreads       = Executors.newFixedThreadPool(numThreads);
         workerID         = 0;
-        sqlWorkers       = new ArrayList<Future>(numThreads);
+        sqlFutures       = new ArrayList<Future>(numThreads);
     }
     
     public void init(){
-        for(int i=0;i<numThreads;i++){
-          sqlWorkers.add(xmlThreads.submit(new XmlWorker( workerID++, this, this.rtpm.filePool.getFileNameStack().pop() )) );// futures.add( executor.submit(workers.get(i))); //submit the workers into the executor
-           //sqlThread needs a new xmlReturn-blob :p
+        for(;currentIndex<numThreads;currentIndex++){
+          sqlFutures.add(xmlThreads.submit(new XmlWorker( workerID++, this, this.rtpm.filePool.getFileNameStack().pop())) );
         }
-	    for(int i=0;i<numThreads;i++){
-			try {sqlThreads.execute( (Runnable) sqlWorkers.get(i).get());} 
-	        catch (InterruptedException e) {e.printStackTrace();} 
-	        catch (ExecutionException e) {e.printStackTrace();}
-	    }
-	    xmlThreads.shutdown();
+        
     }
     
     //Spawns xmlThreads if the fileList still have files left to process
-    public synchronized void  notifyAndSpawn(CountDownLatch dataLatch){
+    public void  notifyAndSpawn(){
         int    workerID  = this.workerID++;
-        int    size      = rtpm.listOfFilesSize();
-       
+        
+        System.out.println(sqlFutures.get(currentIndex).toString() + "::Current Index::" + currentIndex);
+        
+      
         //see if there are any files left to parse,spawn 
-       // if(!(rtpm.getFilePool().getFileNameStack().isEmpty())){
+        if(!(rtpm.getFilePool().getFileNameStack().isEmpty())){
+            sqlFutures.add(xmlThreads.submit(new XmlWorker( workerID++, this, this.rtpm.filePool.getFileNameStack().pop())) );
+            currentIndex++;
+            System.out.println(sqlFutures.get(currentIndex).toString() + "::Current Index::" + currentIndex);
+            try {sqlThreads.execute((Runnable) sqlFutures.get(currentIndex).get());}
+            catch (InterruptedException e){e.printStackTrace();}
+            catch (ExecutionException e){e.printStackTrace();}
             
-         //   String fileName  = rtpm.getFilePool().getFileNameStack().pop();
-         //   XmlWorker x = (XmlWorker)(rtp.addWorker(new XmlWorker(workerID, this, fileName))); //xmlThread expects a "Signal" not a "Spawner"
-            
-            //TODO: Spawn an sql thread from this future
-           // rtp.submit(x);
-      //  }
-      //  else{
-       //     System.out.println("All Files Parsed::");
-        //    rtp.shutdown(); 
-       //}
-        
-//        private void submitXMLThreads(){
-//            for(int i=0;i<MAX_NUM_WORKERS;i++){
-//               xmlThreads.submit(new XmlWorker( workerID++, spawner, filePool.getFileNameStack().pop() ));// futures.add( executor.submit(workers.get(i))); //submit the workers into the executor
-//            }
-//        }
-        
-       
-        
-        
+        }
+        else{
+            System.out.println("All Files Parsed::");
+            xmlThreads.shutdown(); 
+       }
+
     }
     
     
