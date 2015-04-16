@@ -30,7 +30,7 @@ public class CallableWorkerThread implements Callable<Object> {
 	//Use the call method much like 'run()'
 	//returns an Integer that represents the tasks number
 	@Override
-	public Object call() throws Exception {
+	public Runnable call() throws Exception {
 		return null;
 	}
 	

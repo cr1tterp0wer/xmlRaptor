@@ -20,21 +20,15 @@ public class XmlWorker extends CallableWorkerThread {
     }
    
     @Override
-    public CallableWorkerThread call(){       
+    public Runnable call(){       
         testCall();
-        this.finish();
+//        this.finish();
         Object obj = new Object();
         sqlWorker  = new SqlWorker( this.workerID, this.spawner, obj );
         return sqlWorker;  //return the future object, should be an xmlBLOB
     }
     
-    public void finish(){
-
-        spawner.notifyAndSpawn(dataLatch);
-
-        if(dataLatch.getCount() > 0)
-        	dataLatch.countDown();
-    }
+    public void finish(){}
    
     public void testCall(){
         Random r    = new Random();

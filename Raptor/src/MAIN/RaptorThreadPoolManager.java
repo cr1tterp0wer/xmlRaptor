@@ -2,24 +2,18 @@ package MAIN;
 
 import java.util.EmptyStackException;
 import java.util.Scanner;
-import java.util.concurrent.Executor;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import RaptorThreadPool.RaptorFileList;
-import RaptorThreadPool.SqlWorker;
+import RaptorThreadPool.SQLConnectorRaptor;
 import RaptorThreadPool.ThreadSpawner;
-import RaptorThreadPool.XmlWorker;
 
 
 public class RaptorThreadPoolManager {
 
-	
-
 	private String[]                  credentials;   
 	private final int                 NUM_OF_CREDS = 7;      //number of arguments credentials can have
 	private boolean                   validInput   = false;  //make sure input from user for credentials is valid
-	
+	private SQLConnectorRaptor        connector;
 	private final int                 MAX_NUM_WORKERS  = 4;
 	public  volatile RaptorFileList   filePool;  //Gets the list of files
 	private volatile ThreadSpawner    spawner;
@@ -29,6 +23,7 @@ public class RaptorThreadPoolManager {
 	public RaptorThreadPoolManager(){
 		credentials      = new String[NUM_OF_CREDS];
 		spawner          = new ThreadSpawner(MAX_NUM_WORKERS, this);
+		connector        = new SQLConnectorRaptor(this);
 	}
 	
 	
@@ -47,6 +42,9 @@ public class RaptorThreadPoolManager {
 	}
 	
 	public void begin(){
+		connector.connect(credentials[0],credentials[1],credentials[2],
+				          credentials[3],credentials[4],credentials[5],
+				          credentials[6]);
 	}
 	
 	public void end(){

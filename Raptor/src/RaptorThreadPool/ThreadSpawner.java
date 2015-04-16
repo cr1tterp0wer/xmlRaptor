@@ -1,9 +1,12 @@
 package RaptorThreadPool;
 
+import java.util.ArrayList;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import MAIN.RaptorThreadPoolManager;
 
@@ -13,6 +16,7 @@ public class ThreadSpawner {
     private Executor          sqlThreads;
     private ExecutorService   xmlThreads;
     private int               numThreads;        
+    private ArrayList<Future> sqlWorkers;
     public int                workerID;          //Worker Thread ID
     
     //this should spawn all the necessary threads and create a new sql thread outright!
@@ -20,18 +24,23 @@ public class ThreadSpawner {
     public ThreadSpawner(int numberOfThreads, RaptorThreadPoolManager manager){
         this.rtpm        = manager;
         numThreads       = numberOfThreads; 
-        sqlThreads  = Executors.newSingleThreadExecutor();
+        sqlThreads       = Executors.newSingleThreadExecutor();
         xmlThreads       = Executors.newFixedThreadPool(numThreads);
         workerID         = 0;
+        sqlWorkers       = new ArrayList<Future>(numThreads);
     }
     
     public void init(){
         for(int i=0;i<numThreads;i++){
-           xmlThreads.submit(new XmlWorker( workerID++, this, this.rtpm.filePool.getFileNameStack().pop() ));// futures.add( executor.submit(workers.get(i))); //submit the workers into the executor
+          sqlWorkers.add(xmlThreads.submit(new XmlWorker( workerID++, this, this.rtpm.filePool.getFileNameStack().pop() )) );// futures.add( executor.submit(workers.get(i))); //submit the workers into the executor
            //sqlThread needs a new xmlReturn-blob :p
-        
-        
         }
+	    for(int i=0;i<numThreads;i++){
+			try {sqlThreads.execute( (Runnable) sqlWorkers.get(i).get());} 
+	        catch (InterruptedException e) {e.printStackTrace();} 
+	        catch (ExecutionException e) {e.printStackTrace();}
+	    }
+	    xmlThreads.shutdown();
     }
     
     //Spawns xmlThreads if the fileList still have files left to process
