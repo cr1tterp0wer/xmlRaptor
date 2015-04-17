@@ -28,11 +28,11 @@ public class ThreadSpawner {
     //this should spawn all the necessary threads and create a new sql thread outright!
     
     public ThreadSpawner(int numberOfThreads, RaptorThreadPoolManager m){
-        manager = m;
-        dataList = new Stack<Object>();
+        manager     = m;
+        dataList    = new Stack<Object>();
         xmlExecutor = Executors.newFixedThreadPool(numberOfThreads);
         blockingQueue = new ArrayBlockingQueue<Runnable>(100);
-        sqlExecutor   = new ThreadPoolExecutor(10,20,0, TimeUnit.MINUTES, blockingQueue);
+        sqlExecutor   = new ThreadPoolExecutor(10,100,0, TimeUnit.MINUTES, blockingQueue);
     }
     public void init(){
         numberOfFiles = manager.getFilePool().getFiles().size();
@@ -42,35 +42,33 @@ public class ThreadSpawner {
         xmlExecutor.execute(new XmlWorker(workerID++, this, manager.filePool.getFileNameStack().pop() ));
     }
 
-    
     public void start(){
-        
-        
         while(!(manager.filePool.getFileNameStack().isEmpty()) ){
             xmlExecutor.execute(new XmlWorker(workerID++, this, manager.filePool.getFileNameStack().pop() ));
         }
         shutdownXML();
-
     }
-    
     
     public void shutdownXML(){
         ((ExecutorService) xmlExecutor).shutdown();
-        
     }
-    private void shutdownSql(){
-        sqlExecutor.shutdown();
-    }
-    
+   
     
     public synchronized void shutdownSqlPool(){  
-        if(finishedSql >= numberOfFiles)
+        //0-based
+        if(finishedSql >= numberOfFiles-1){
             shutdownSql();
+            System.out.println("FINISHEDsql::"+finishedSql+" NumberOfFiles::"+ numberOfFiles);
+        }
     }
     public Executor getSqlExecutor(){return sqlExecutor;}
     public RaptorThreadPoolManager getManager(){return manager;}
     public synchronized void incrementFinishedSql(){finishedSql++;}
     public synchronized int getNumberOfFiles(){return numberOfFiles;}
     public synchronized int getNumFinishedSql(){return finishedSql;}
+    
+    private void shutdownSql(){
+        sqlExecutor.shutdown();
+    }
     
 }

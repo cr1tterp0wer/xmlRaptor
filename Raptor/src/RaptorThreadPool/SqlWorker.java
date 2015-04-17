@@ -14,7 +14,7 @@ public class SqlWorker implements Runnable{
     public SQLConnectorRaptor sqlConnector;
    
 
-    //SHOULD SPAWN WITH XMLOBJECT!
+    //SHOULD SPAWN WITH XMLOBJECT
     public SqlWorker(int id, ThreadSpawner s, Object obj){
         this.obj   = obj;
         workerID =id;
@@ -24,8 +24,8 @@ public class SqlWorker implements Runnable{
     
     @Override
     public void run(){
-    	testCall();
-    	System.out.println(this);
+    	
+    	System.out.println(this + "::" + workerID);
     	finish();
     }
 
@@ -33,20 +33,22 @@ public class SqlWorker implements Runnable{
        spawner.incrementFinishedSql();
        spawner.shutdownSqlPool();
     }
-   
-    public void testCall(){
-        Random r    = new Random();
-        
-        for(int i=0;i< 100;i++){
-            int   delta = r.nextInt(100);
-            System.out.println("sql#"+ workerID +" :: " +i);
-            try {
-                Thread.sleep(delta);    
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }   
-    }
+    
+    
+//   TESTING PURPOSES
+//    public void testCall(){
+//        Random r    = new Random();
+//        
+//        for(int i=0;i< 100;i++){
+//            int   delta = r.nextInt(100);
+//            //System.out.println("sql#"+ workerID +" :: " +i);
+//            try {
+//                Thread.sleep(delta);    
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
+//        }   
+//    }
 
 }
 

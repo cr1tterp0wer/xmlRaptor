@@ -1,4 +1,4 @@
-package ThreadPool;
+package SQL;
 
 import com.mysql.jdbc.Connection;
 import com.mysql.jdbc.DatabaseMetaData;
@@ -18,6 +18,7 @@ public class SQLConnector {
 	//PreparedStatement ps;
 	//Scanner    scan;
 	Properties connProperties;
+	protected boolean isConnected = false;
 	
 	public SQLConnector(){
 		
@@ -35,12 +36,12 @@ public class SQLConnector {
 		connProperties = new Properties();
 		connProperties.put("user", username);
 		connProperties.put("password", pass);
-		
+		System.out.println("Connecting to '" + dbName + "'...");
 		// Connect to MySQL
 		try {
 			conn = (Connection) DriverManager.getConnection("jdbc:mysql://" + serverAddress
 					                          +":"+ port + "/" + dbName, connProperties);
-			System.out.println("Connected to database");
+			
 			successfulConnection();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
@@ -53,6 +54,7 @@ public class SQLConnector {
 		try{
 			conn.close();
 			System.out.println("Disconnected from database");
+			isConnected = false;
 		}catch(SQLException e){
 			System.out.println("Unable to close connection!");
 			e.printStackTrace();
@@ -102,7 +104,11 @@ public class SQLConnector {
 			return;
 		}
 	}
-	protected void errorConnecting(){}
-	protected void successfulConnection(){}
+	protected void errorConnecting(){
+	    
+	}
+	protected void successfulConnection(){ 
+	  
+	}
 
 }

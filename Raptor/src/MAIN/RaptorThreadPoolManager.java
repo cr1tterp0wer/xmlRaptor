@@ -20,12 +20,13 @@ public class RaptorThreadPoolManager {
 
 	public RaptorThreadPoolManager(){
 		credentials      = new String[NUM_OF_CREDS];
-		spawner          = new ThreadSpawner(MAX_NUM_WORKERS, this);
+
 		connector        = new SQLConnectorRaptor(this);
 	}
 
 	//Initialize the first threads
 	public void init(){
+	    spawner          = new ThreadSpawner(MAX_NUM_WORKERS, this);
 		inputDefualtCredentials();                       //get server credentials
 		filePool   = new RaptorFileList(credentials[0]); //get all the necessary files
 		
@@ -34,15 +35,18 @@ public class RaptorThreadPoolManager {
 		if(filePool.getFileNameStack().isEmpty())        
             throw new EmptyStackException();  //No files? No go.
 		
-		//INIT the spawner()!
-		spawner.init();
+
 	}
 	
 	public void begin(){
-		connector.connect(credentials[0],credentials[1],credentials[2],
-				          credentials[3],credentials[4],credentials[5],
-				          credentials[6]);
-		spawner.start();
+        connector.connect(credentials[0],credentials[1],credentials[2],
+                credentials[3],credentials[4],credentials[5],
+                credentials[6]);
+        //INIT the spawner()!
+        spawner.init();
+        spawner.start();
+	
+		
 	}
 	
 	public void end(){
@@ -88,7 +92,7 @@ public class RaptorThreadPoolManager {
 	 }
 	 private void inputDefualtCredentials(){
 
-	     credentials[0] = "./metadata/TEST";
+	     credentials[0] = "./metadata/filingdb";
 	     credentials[1] = "filing";
 	     credentials[2] = "localhost";
 	     credentials[3] = "3306";

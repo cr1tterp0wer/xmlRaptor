@@ -5,14 +5,14 @@ import Persistence.FileObject;
 
 public class Raptor {
 
-	static RaptorThreadPoolManager pool;
+	static RaptorThreadPoolManager Raptor;
 	
 	public static void main(String[] args) {
-		pool = new RaptorThreadPoolManager();
-		pool.init();
+		Raptor = new RaptorThreadPoolManager();
+		Raptor.init();
 		
-		pool.begin();
-		pool.end();
+		Raptor.begin();
+		Raptor.end();
 		
 	}
 }
