@@ -67,6 +67,8 @@ public class XmlWorker implements Runnable {
 
     }
     
+    
+    
 //    private void parseFile() throws XMLStreamException{
 //       
 //        
