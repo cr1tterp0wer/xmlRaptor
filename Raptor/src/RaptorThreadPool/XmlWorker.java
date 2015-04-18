@@ -64,13 +64,7 @@ public class XmlWorker implements Runnable {
         try{
         xmlStreamReader = xmlInputFactory.createXMLStreamReader(new FileInputStream(this.file)); //create the reader
         }catch(FileNotFoundException e){e.printStackTrace();}catch(XMLStreamException e ){e.printStackTrace();}
-        
-        
-        
-        
-        
-        
-        
+
     }
     
 //    private void parseFile() throws XMLStreamException{

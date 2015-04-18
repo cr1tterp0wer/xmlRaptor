@@ -33,7 +33,6 @@ public class XMLThread<T> {
 	}
 }
 
-
 //	
 //	public void run(){
 //		//figure out which file to take off the stack.pop()
