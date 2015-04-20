@@ -1,7 +1,5 @@
 package Tree;
 import java.util.ArrayList;
-
-
 import Tree.XMLTree.Node;
  
 public class XMLTreeHandler {
@@ -22,7 +20,7 @@ public class XMLTreeHandler {
                 c.setParent(current.getNode());
  
             tree.getCurrentElement().setParent(current);
-                tree.getCurrentElement().addChild(c);
+            tree.getCurrentElement().addChild(c);
         }
        
         public boolean moveToParent(){

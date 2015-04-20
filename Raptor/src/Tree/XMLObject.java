@@ -19,7 +19,7 @@ public class XMLObject {
 	public void addAttribute(String _key, String _value)      {this.dictionary.put(_key, _value);}
 	public void setElementName(String _elementName)           {elementName = _elementName;}
 	public void setParentID(String _parentID)                 {parentId = _parentID;}
-	public void setID(int _ID)                                {
+	public void setID(int _ID){
 		cid = _ID;
 		dictionary.put("cid", cid+"");
 	}

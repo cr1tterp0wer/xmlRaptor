@@ -14,7 +14,6 @@ public class RaptorThreadPoolManager {
 	private final int                 NUM_OF_CREDS = 7;      //number of arguments credentials can have
 	private boolean                   validInput   = false;  //make sure input from user for credentials is valid
 	private SQLConnectorRaptor        connector;
-	private final int                 MAX_NUM_WORKERS  = 4;
 	public  volatile RaptorFileList   filePool;  //Gets the list of files
 	private volatile ThreadSpawner    spawner;
 
@@ -26,7 +25,7 @@ public class RaptorThreadPoolManager {
 
 	//Initialize the first threads
 	public void init(){
-	    spawner          = new ThreadSpawner(MAX_NUM_WORKERS, this);
+	    spawner          = new ThreadSpawner( this);
 		inputDefualtCredentials();                       //get server credentials
 		filePool   = new RaptorFileList(credentials[0]); //get all the necessary files
 		
@@ -57,6 +56,7 @@ public class RaptorThreadPoolManager {
 	public boolean getValidInput()                 { return validInput;}
 	public int     listOfFilesSize()			   { return filePool.getFileNameStack().size(); }
 	public         RaptorFileList getFilePool()    { return filePool;}
+	public SQLConnectorRaptor getConnector()       { return connector; }
 	
 //	##################Private methods##################  //
 	
@@ -92,7 +92,7 @@ public class RaptorThreadPoolManager {
 	 }
 	 private void inputDefualtCredentials(){
 
-	     credentials[0] = "./metadata/filingdb";
+	     credentials[0] = "./metadata/test";
 	     credentials[1] = "filing";
 	     credentials[2] = "localhost";
 	     credentials[3] = "3306";

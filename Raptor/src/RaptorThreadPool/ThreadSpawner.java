@@ -20,26 +20,36 @@ public class ThreadSpawner {
     private Executor xmlExecutor;
     private ThreadPoolExecutor sqlExecutor;
     private BlockingQueue<Runnable> blockingQueue;
-    private int      workerID = 0;
-    private int      numberOfFiles;
-    private int      finishedSql=0;
-    
+    private int       workerID = 0;
+    private int       numberOfFiles;
+    private final int MAX_NUM_WORKERS  = 4;
+    private final int MIN_NUM_WORKERS  = 1;
+    private int       finishedSql=0;
+
    
     //this should spawn all the necessary threads and create a new sql thread outright!
     
-    public ThreadSpawner(int numberOfThreads, RaptorThreadPoolManager m){
+    public ThreadSpawner(RaptorThreadPoolManager m){
         manager     = m;
         dataList    = new Stack<Object>();
-        xmlExecutor = Executors.newFixedThreadPool(numberOfThreads);
+        
         blockingQueue = new ArrayBlockingQueue<Runnable>(100);
         sqlExecutor   = new ThreadPoolExecutor(10,100,0, TimeUnit.MINUTES, blockingQueue);
     }
     public void init(){
         numberOfFiles = manager.getFilePool().getFiles().size();
-        xmlExecutor.execute(new XmlWorker(workerID++, this, manager.filePool.getFileNameStack().pop() ));
-        xmlExecutor.execute(new XmlWorker(workerID++, this, manager.filePool.getFileNameStack().pop() ));
-        xmlExecutor.execute(new XmlWorker(workerID++, this, manager.filePool.getFileNameStack().pop() ));
-        xmlExecutor.execute(new XmlWorker(workerID++, this, manager.filePool.getFileNameStack().pop() ));
+        
+        if(numberOfFiles>=4){
+        	xmlExecutor = Executors.newFixedThreadPool(MAX_NUM_WORKERS);
+	        xmlExecutor.execute(new XmlWorker(workerID++, this, manager.filePool.getFileNameStack().pop() ));
+	        xmlExecutor.execute(new XmlWorker(workerID++, this, manager.filePool.getFileNameStack().pop() ));
+	        xmlExecutor.execute(new XmlWorker(workerID++, this, manager.filePool.getFileNameStack().pop() ));
+	        xmlExecutor.execute(new XmlWorker(workerID++, this, manager.filePool.getFileNameStack().pop() ));
+        }else{
+        	xmlExecutor = Executors.newFixedThreadPool(MIN_NUM_WORKERS);
+        	xmlExecutor.execute(new XmlWorker(workerID++, this, manager.filePool.getFileNameStack().pop() ));
+        }
+        
     }
 
     public void start(){
