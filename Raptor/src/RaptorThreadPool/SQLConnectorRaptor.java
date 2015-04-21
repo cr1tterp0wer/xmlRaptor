@@ -25,6 +25,10 @@ public class SQLConnectorRaptor extends SQLConnector{
         isConnected = true;
 		parentPoolManager.setValidInput(true);
 	}
+	
+	
 	public String  getParentObject(){ return this.credentials[1];}
 	public boolean getIsConnected(){return this.isConnected;}
+	
+	
 }

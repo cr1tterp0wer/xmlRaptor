@@ -2,28 +2,27 @@ package RaptorThreadPool;
 
 
 import java.util.Random;
-import java.util.concurrent.Executor;
 
 public class SqlWorker implements Runnable{
 
  
-    private Object obj;
+    private XmlData tree;
     private int    workerID;
     private ThreadSpawner spawner;
     
     public SQLConnectorRaptor sqlConnector;
-   
 
     //SHOULD SPAWN WITH XMLOBJECT
-    public SqlWorker(int id, ThreadSpawner s, Object obj){
-        this.obj   = obj;
+    public SqlWorker(int id, ThreadSpawner s, Object data){
+        this.tree   = (XmlData)data;
         workerID =id;
         spawner = s;
-    
+        sqlConnector = spawner.getManager().getConnector();
     }
     
     @Override
     public void run(){
+    	sqlInject();
     	
     	System.out.println(this + "::" + workerID);
     	finish();
@@ -33,22 +32,13 @@ public class SqlWorker implements Runnable{
        spawner.incrementFinishedSql();
        spawner.shutdownSqlPool();
     }
-    
-    
-//   TESTING PURPOSES
-//    public void testCall(){
-//        Random r    = new Random();
-//        
-//        for(int i=0;i< 100;i++){
-//            int   delta = r.nextInt(100);
-//            //System.out.println("sql#"+ workerID +" :: " +i);
-//            try {
-//                Thread.sleep(delta);    
-//            } catch (InterruptedException e) {
-//                e.printStackTrace();
-//            }
-//        }   
-//    }
 
+    private void sqlInject(){
+    	
+    	
+    	
+    	
+    }
+    
 }
 

@@ -45,7 +45,7 @@ public class XmlWorker implements Runnable {
 
 	private void finish(){
 		System.out.println(this +"::"+ workerID + "::Done");   
-		sqlWorker = new SqlWorker(workerID, spawner, element);
+		sqlWorker = new SqlWorker(workerID, spawner, tree);
 		spawner.getSqlExecutor().execute(sqlWorker);
 	}
 
@@ -100,7 +100,8 @@ public class XmlWorker implements Runnable {
 		xmlStreamReader.close();
 		element = null;
 		System.gc();
-	    printAllObjects();
+	    //printAllObjects();
+		// -> send tree-object to an sql thread
 	}
 
 	private void printAllObjects(){

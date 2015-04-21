@@ -16,7 +16,6 @@ import MAIN.RaptorThreadPoolManager;
 public class ThreadSpawner {
 
     private RaptorThreadPoolManager manager;
-    private volatile Stack<Object>  dataList;
     private Executor xmlExecutor;
     private ThreadPoolExecutor sqlExecutor;
     private BlockingQueue<Runnable> blockingQueue;
@@ -31,7 +30,6 @@ public class ThreadSpawner {
     
     public ThreadSpawner(RaptorThreadPoolManager m){
         manager     = m;
-        dataList    = new Stack<Object>();
         
         blockingQueue = new ArrayBlockingQueue<Runnable>(100);
         sqlExecutor   = new ThreadPoolExecutor(10,100,0, TimeUnit.MINUTES, blockingQueue);
