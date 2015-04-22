@@ -64,7 +64,7 @@ public class ThreadSpawner {
     
     public synchronized void shutdownSqlPool(){  
         //0-based
-        if(finishedSql >= numberOfFiles-1){
+        if(finishedSql >= numberOfFiles){
             shutdownSql();
             System.out.println("FINISHEDsql::"+finishedSql+" NumberOfFiles::"+ numberOfFiles);
         }

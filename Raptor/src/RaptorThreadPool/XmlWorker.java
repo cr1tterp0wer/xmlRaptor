@@ -56,10 +56,7 @@ public class XmlWorker implements Runnable {
 			xmlStreamReader = xmlInputFactory.createXMLStreamReader(new FileInputStream(this.file)); //create the reader
 		}catch(FileNotFoundException e){e.printStackTrace();}catch(XMLStreamException e ){e.printStackTrace();}
 
-
-		
 		event   = xmlStreamReader.getEventType();
-		
 		
 		while(xmlStreamReader.hasNext()){
 			element = tree.new XmlBlob();
@@ -101,7 +98,6 @@ public class XmlWorker implements Runnable {
 		element = null;
 		System.gc();
 	    //printAllObjects();
-		// -> send tree-object to an sql thread
 	}
 
 	private void printAllObjects(){

@@ -92,7 +92,7 @@ public class RaptorThreadPoolManager {
 	 }
 	 private void inputDefualtCredentials(){
 
-	     credentials[0] = "./metadata/test";
+	     credentials[0] = "./metadata/protos";
 	     credentials[1] = "filing";
 	     credentials[2] = "localhost";
 	     credentials[3] = "3306";

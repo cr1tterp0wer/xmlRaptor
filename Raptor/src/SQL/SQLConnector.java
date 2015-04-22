@@ -16,140 +16,140 @@ import java.util.Scanner;
 public class SQLConnector {
 
 
-	Connection conn;
-	PreparedStatement ps;
-	HashMap<String,PreparedStatement> preparedStatements;
-	Scanner    scan;
-	Properties connProperties;
-	protected boolean  isConnected = false;
-	protected String[] credentials;
-	private  final int NUM_CREDS = 7;
+    Connection conn;
+    PreparedStatement ps;
+    HashMap<String,PreparedStatement> preparedStatements;
+    Scanner    scan;
+    Properties connProperties;
+    protected boolean  isConnected = false;
+    protected String[] credentials;
+    private  final int NUM_CREDS = 7;
 
-	public SQLConnector(){
-		credentials = new String[NUM_CREDS];
-		preparedStatements = new HashMap<String, PreparedStatement>();
-		
-		try {
-			Class.forName("com.mysql.jdbc.Driver");
-		} catch (ClassNotFoundException e) {e.printStackTrace();}
-	}
+    public SQLConnector(){
+        credentials = new String[NUM_CREDS];
+        preparedStatements = new HashMap<String, PreparedStatement>();
 
-	public void connect(String path, String xmlObject, String serverAddress,
-			String port, String username,
-			String pass, String dbName){
-		credentials [0] = path;
-		credentials [1] = xmlObject;
-		credentials [2] = serverAddress;
-		credentials [3] = port;
-		credentials [4] = username;
-		credentials [5] = pass;
-		credentials [6] = dbName;
+        try {
+            Class.forName("com.mysql.jdbc.Driver");
+        } catch (ClassNotFoundException e) {e.printStackTrace();}
+    }
 
-		connProperties = new Properties();
-		connProperties.put("user", username);
-		connProperties.put("password", pass);
-		System.out.println("Connecting to '" + dbName + "'...");
-		// Connect to MySQL
-		try {
-			conn = (Connection) DriverManager.getConnection("jdbc:mysql://" + serverAddress
-					+":"+ port + "/" + dbName, connProperties);
+    public void connect(String path, String xmlObject, String serverAddress,
+            String port, String username,
+            String pass, String dbName){
+        credentials [0] = path;
+        credentials [1] = xmlObject;
+        credentials [2] = serverAddress;
+        credentials [3] = port;
+        credentials [4] = username;
+        credentials [5] = pass;
+        credentials [6] = dbName;
 
-			successfulConnection();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			errorConnecting();
-		}
-	}
+        connProperties = new Properties();
+        connProperties.put("user", username);
+        connProperties.put("password", pass);
+        System.out.println("Connecting to '" + dbName + "'...");
+        // Connect to MySQL
+        try {
+            conn = (Connection) DriverManager.getConnection("jdbc:mysql://" + serverAddress
+                    +":"+ port + "/" + dbName, connProperties);
 
-	public void closeConnection(){
-		try{
-			conn.close();
-			System.out.println("Disconnected from database");
-			isConnected = false;
-		}catch(SQLException e){
-			System.out.println("Unable to close connection!");
-			e.printStackTrace();
-		}
-	}
+            successfulConnection();
+        } catch (SQLException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            errorConnecting();
+        }
+    }
 
-	//Do not use for Insertions!
-	public boolean executeUpdate(Connection conn, String command) throws SQLException {
-		Statement stmt = null;
-		try {
-			stmt = conn.createStatement();
-			stmt.executeUpdate(command); 
-			return true;
-		} finally {
-			// This will run whether we throw an exception or not
-			if (stmt != null) { stmt.close(); }
-		}
-	}
+    public void closeConnection(){
+        try{
+            conn.close();
+            System.out.println("Disconnected from database");
+            isConnected = false;
+        }catch(SQLException e){
+            System.out.println("Unable to close connection!");
+            e.printStackTrace();
+        }
+    }
 
-	//Drop Single Table
-	public void dropTable(String table){
-		try{
-			String createString = "DROP TABLE " + table;
+    //Do not use for Insertions!
+    public boolean executeUpdate(Connection conn, String command) throws SQLException {
+        Statement stmt = null;
+        try {
+            stmt = conn.createStatement();
+            stmt.executeUpdate(command); 
+            return true;
+        } finally {
+            // This will run whether we throw an exception or not
+            if (stmt != null) { stmt.close(); }
+        }
+    }
 
-			this.executeUpdate(conn,createString );
-			System.out.println("Dropped table: " + table);
+    //Drop Single Table
+    public void dropTable(String table){
+        try{
+            String createString = "DROP TABLE " + table;
 
-		}catch(SQLException e){
-			System.out.println("ERROR: Could not drop the table");
-			e.printStackTrace();
-			return;
-		}
-	}
+            this.executeUpdate(conn,createString );
+            System.out.println("Dropped table: " + table);
 
-	//Drop All Tables
-	public void dropAllTables(){
-		try{
-			DatabaseMetaData md = (DatabaseMetaData) conn.getMetaData();
-			ResultSet rs        = md.getTables(null, null, "%", null);
-			while (rs.next()) {
-				dropTable(rs.getString(3));
-				System.out.println(rs.getString(3) + " dropped!");
-			}
-		}catch(SQLException e){
-			System.out.println("ERROR: Could not drop the table");
-			e.printStackTrace();
-			return;
-		}
-	}
+        }catch(SQLException e){
+            System.out.println("ERROR: Could not drop the table");
+            e.printStackTrace();
+            return;
+        }
+    }
 
-	public void createTable(String _name){
-		// Create a table
-		String tableName = _name;
-		try {
-			DatabaseMetaData md = (DatabaseMetaData) conn.getMetaData();
-			ResultSet rs = md.getTables(null, null, tableName, null);
-			if (rs.next()) {
-				System.out.println("TABLE EXISTS");
-			}else{
-				 String sql =  "CREATE TABLE " +
-							   tableName +
-			                   "(id INTEGER not NULL AUTO_INCREMENT, " +
-			                   " PRIMARY KEY ( id ))"; 
-				 
-				this.executeUpdate(conn, sql);
-				System.out.println("Created a table:" + tableName);
-			}
-		} catch (SQLException e) {
-			System.out.println("ERROR: Could not create the table");
-			e.printStackTrace();
-			return;
-		}
-	}
+    //Drop All Tables
+    public void dropAllTables(){
+        try{
+            DatabaseMetaData md = (DatabaseMetaData) conn.getMetaData();
+            ResultSet rs        = md.getTables(null, null, "%", null);
+            while (rs.next()) {
+                dropTable(rs.getString(3));
+                System.out.println(rs.getString(3) + " dropped!");
+            }
+        }catch(SQLException e){
+            System.out.println("ERROR: Could not drop the table");
+            e.printStackTrace();
+            return;
+        }
+    }
+
+    public void createTable(String _name){
+        // Create a table
+        String tableName = _name;
+        try {
+            DatabaseMetaData md = (DatabaseMetaData) conn.getMetaData();
+            ResultSet rs = md.getTables(null, null, tableName, null);
+            if (rs.next()) {
+                System.out.println("TABLE EXISTS");
+            }else{
+                String sql =  "CREATE TABLE " +
+                        tableName +
+                        "(id INTEGER not NULL AUTO_INCREMENT, " +
+                        " PRIMARY KEY ( id ))"; 
+
+                this.executeUpdate(conn, sql);
+                System.out.println("Created a table:" + tableName);
+            }
+        } catch (SQLException e) {
+            System.out.println("ERROR: Could not create the table");
+            e.printStackTrace();
+            return;
+        }
+    }
 
 
 
-	protected void errorConnecting(){
+    protected void errorConnecting(){
 
-	}
-	protected void successfulConnection(){ 
+    }
+    protected void successfulConnection(){ 
 
-	}
-	protected String[] getCreds(){return credentials;}
+    }
+    protected String[] getCreds(){return credentials;}
 
 }
 

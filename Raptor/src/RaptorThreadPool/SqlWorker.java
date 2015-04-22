@@ -34,10 +34,7 @@ public class SqlWorker implements Runnable{
     }
 
     private void sqlInject(){
-    	
-    	
-    	
-    	
+        sqlConnector.injectXmlBlob(this.tree);	
     }
     
 }
