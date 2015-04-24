@@ -27,13 +27,9 @@ public class SQLConnectorRaptor extends SQLConnector{
 		tables            = new ArrayList();
 		createStatements();
 		
-		//
 		/// hashmap ("createTable", preparedStatement)
 		/// hashmap.get("createTable").setString( someValue, someOtherValue, EvenMoreValues);
-		
-		
-		
-		
+	    /// 
 		
 	}
 	

@@ -26,7 +26,7 @@ public class SQLConnector {
     private  final int NUM_CREDS = 7;
 
     public SQLConnector(){
-        credentials = new String[NUM_CREDS];
+        credentials        = new String[NUM_CREDS];
         preparedStatements = new HashMap<String, PreparedStatement>();
 
         try {
@@ -35,8 +35,8 @@ public class SQLConnector {
     }
 
     public void connect(String path, String xmlObject, String serverAddress,
-            String port, String username,
-            String pass, String dbName){
+                        String port, String username,
+                        String pass, String dbName){
         credentials [0] = path;
         credentials [1] = xmlObject;
         credentials [2] = serverAddress;
@@ -126,10 +126,10 @@ public class SQLConnector {
             if (rs.next()) {
                 System.out.println("TABLE EXISTS");
             }else{
-                String sql =  "CREATE TABLE " +
-                        tableName +
-                        "(id INTEGER not NULL AUTO_INCREMENT, " +
-                        " PRIMARY KEY ( id ))"; 
+                String sql =   "CREATE TABLE " +
+		                        tableName +
+		                        "(id INTEGER not NULL AUTO_INCREMENT, " +
+		                        " PRIMARY KEY ( id ))"; 
 
                 this.executeUpdate(conn, sql);
                 System.out.println("Created a table:" + tableName);

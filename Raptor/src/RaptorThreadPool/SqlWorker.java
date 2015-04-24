@@ -1,22 +1,19 @@
 package RaptorThreadPool;
 
-
-import java.util.Random;
-
 public class SqlWorker implements Runnable{
 
  
-    private XmlData tree;
-    private int    workerID;
+    private XmlData       tree;
+    private int           workerID;
     private ThreadSpawner spawner;
     
     public SQLConnectorRaptor sqlConnector;
 
     //SHOULD SPAWN WITH XMLOBJECT
     public SqlWorker(int id, ThreadSpawner s, Object data){
-        this.tree   = (XmlData)data;
-        workerID =id;
-        spawner = s;
+        this.tree    = (XmlData)data;
+        workerID     =id;
+        spawner      = s;
         sqlConnector = spawner.getManager().getConnector();
     }
     

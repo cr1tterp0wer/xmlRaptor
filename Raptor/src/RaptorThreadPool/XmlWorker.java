@@ -26,7 +26,6 @@ public class XmlWorker implements Runnable {
 	private String    parentObjectName;
 	private String    attributeID="";
 
-
 	public XmlWorker(int workerNumber, ThreadSpawner s, String f){
 		workerID = workerNumber;
 		this.spawner =  s;
@@ -48,7 +47,6 @@ public class XmlWorker implements Runnable {
 		sqlWorker = new SqlWorker(workerID, spawner, tree);
 		spawner.getSqlExecutor().execute(sqlWorker);
 	}
-
 
 	private void parseFile() throws XMLStreamException{
 
