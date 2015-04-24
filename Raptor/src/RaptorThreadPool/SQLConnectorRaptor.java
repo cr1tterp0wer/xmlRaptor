@@ -27,9 +27,35 @@ public class SQLConnectorRaptor extends SQLConnector{
 		tables            = new ArrayList();
 		createStatements();
 		
+<<<<<<< HEAD
 		/// hashmap ("createTable", preparedStatement)
 		/// hashmap.get("createTable").setString( someValue, someOtherValue, EvenMoreValues);
 	    /// 
+=======
+//		
+//		NAME::Registrant                                  # the table name
+//		  -->RegistrantCountry = USA                      # column::REGISTRANTCOUNTRY, value::USA
+//		  -->RegistrantName = Liebman & Associates, Inc.  # column::REGISTRANTNAME,    value::LIEBMAN & ASSOCIATES, INC.
+//		  -->Address = 1250 24th Street, NW, Suite 300    # column::ADDRESS,           value:: 1250 24th STREET, NW, SUITE 300
+		
+		
+		//
+		/// hashmap ("createTable", preparedStatement)
+		/// hashmap.get("createTable").setString( someValue, someOtherValue, EvenMoreValues);
+		/// hashmap.get("insertDataRegistrant").setString(  theCorrectTable, 
+		
+//		
+//		String sqlCreate = "CREATE TABLE IF NOT EXISTS " + this.getTableName()
+//	            + "  (brand           VARCHAR(10),"
+//	            + "   year            INTEGER,"
+//	            + "   number          INTEGER,"
+//	            + "   value           INTEGER,"
+//	            + "   card_count           INTEGER,"
+//	            + "   player_name     VARCHAR(50),"
+//	            + "   player_position VARCHAR(20))";
+		
+		
+>>>>>>> 0acdf0de79d9ee0887f94ff666912dcfb3dbf997
 		
 	}
 	
