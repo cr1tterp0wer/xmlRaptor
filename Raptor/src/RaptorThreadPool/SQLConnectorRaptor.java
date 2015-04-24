@@ -26,12 +26,10 @@ public class SQLConnectorRaptor extends SQLConnector{
 		parentPoolManager = parent;
 		tables            = new ArrayList();
 		createStatements();
-		
-<<<<<<< HEAD
+
 		/// hashmap ("createTable", preparedStatement)
 		/// hashmap.get("createTable").setString( someValue, someOtherValue, EvenMoreValues);
 	    /// 
-=======
 //		
 //		NAME::Registrant                                  # the table name
 //		  -->RegistrantCountry = USA                      # column::REGISTRANTCOUNTRY, value::USA
@@ -53,9 +51,6 @@ public class SQLConnectorRaptor extends SQLConnector{
 //	            + "   card_count           INTEGER,"
 //	            + "   player_name     VARCHAR(50),"
 //	            + "   player_position VARCHAR(20))";
-		
-		
->>>>>>> 0acdf0de79d9ee0887f94ff666912dcfb3dbf997
 		
 	}
 	
