@@ -12,7 +12,7 @@ public class SqlWorker implements Runnable{
     //SHOULD SPAWN WITH XMLOBJECT
     public SqlWorker(int id, ThreadSpawner s, Object data){
         this.tree    = (XmlData)data;
-        workerID     =id;
+        workerID     = id;
         spawner      = s;
         sqlConnector = spawner.getManager().getConnector();
     }

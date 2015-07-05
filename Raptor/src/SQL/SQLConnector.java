@@ -16,11 +16,12 @@ import java.util.Scanner;
 public class SQLConnector {
 
 
-    Connection conn;
+    
     PreparedStatement ps;
     HashMap<String,PreparedStatement> preparedStatements;
     Scanner    scan;
     Properties connProperties;
+    protected Connection conn;
     protected boolean  isConnected = false;
     protected String[] credentials;
     private  final int NUM_CREDS = 7;
@@ -140,8 +141,6 @@ public class SQLConnector {
             return;
         }
     }
-
-
 
     protected void errorConnecting(){
 
