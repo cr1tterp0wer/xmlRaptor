@@ -1,8 +1,5 @@
 package RaptorThreadPool;
 
-
-
-import java.util.Stack;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Executor;
@@ -47,7 +44,6 @@ public class ThreadSpawner {
         	xmlExecutor = Executors.newFixedThreadPool(MIN_NUM_WORKERS);
         	xmlExecutor.execute(new XmlWorker(workerID++, this, manager.filePool.getFileNameStack().pop() ));
         }
-        
     }
 
     public void start(){
@@ -61,7 +57,6 @@ public class ThreadSpawner {
         ((ExecutorService) xmlExecutor).shutdown();
     }
    
-    
     public synchronized void shutdownSqlPool(){  
         //0-based
         if(finishedSql >= numberOfFiles){

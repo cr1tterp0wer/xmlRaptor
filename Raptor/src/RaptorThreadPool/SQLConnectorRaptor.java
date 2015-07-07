@@ -18,8 +18,8 @@ public class SQLConnectorRaptor extends SQLConnector{
 
 	HashMap<String, PreparedStatement> statments;
 	ArrayList<String>                  tables;
-	RaptorThreadPoolManager parentPoolManager;
-	XmlData                 tree;
+	RaptorThreadPoolManager            parentPoolManager;
+	XmlData                            tree;
 
 	public SQLConnectorRaptor(){super();}
 	public SQLConnectorRaptor(RaptorThreadPoolManager parent){
@@ -27,10 +27,6 @@ public class SQLConnectorRaptor extends SQLConnector{
 		parentPoolManager = parent;
 		tables            = new ArrayList();
 		createStatements();
-
-
-
-
 
 		/// hashmap ("createTable", preparedStatement)
 		/// hashmap.get("createTable").setString( someValue, someOtherValue, EvenMoreValues);
@@ -77,28 +73,67 @@ public class SQLConnectorRaptor extends SQLConnector{
 
 	public void    injectXmlBlob(XmlData xmlBlob){
 		tree = xmlBlob;
+		String insertStatement = "";
+		
 		
 		for(int i=0;i<tree.size();i++){
-			System.out.println(" NAME::"+tree.getElementAt(i).getElementName() );//this is a table
+			String table = tree.getElementAt(i).getElementName(); //table name
+			insertStatement = "CREATE TABLE IF NOT EXISTS " + tree.getElementAt(i).getElementName()
+					        + " (pid INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY(pid));";
+		    
+			//execute the update, create table if not exists
+			try {
+				System.out.println(insertStatement);
+				this.executeUpdate(conn, insertStatement);
+			} catch (SQLException e) {e.printStackTrace();}
+			
 			for( int k=0;k< tree.getDataList().size();k++){	
 				 Iterator it =  tree.getElementAt(i).getElements().entrySet().iterator();
-				while(it.hasNext()){
+				 
+				 while(it.hasNext()){
 					Map.Entry pair = (Map.Entry)it.next();
-					System.out.println("  -->" + pair.getKey() + " = " + pair.getValue());
-			        it.remove();
+					//System.out.println("  -->" + pair.getKey() + " = " + pair.getValue()); //key = column, value = value;
+					
+					
+					//check if column exists
+					try {
+						DatabaseMetaData md = (DatabaseMetaData) conn.getMetaData();
+						ResultSet r;
+						r = md.getColumns(null, null, "table_name", "column_name");
+						
+						//build the columns
+						//get list of the values
+						//get list of the keys
+						// create insert statement after you gather them
+						// execute insertion
+						//!exists
+						 if (r.next()) {
+							 //check the length of value, make LONG,MEDIUM,SMALL-TEXT
+							 System.out.println("column does not exist::Creating column" );
+							 insertStatement = "ALTER TABLE " + table + " ADD COLUMN " + pair.getKey() + " LONGTEXT ;"; 
+						     this.executeUpdate(conn, insertStatement);
+						     System.out.println(insertStatement);
+						 }
+						 else{
+							
+						 }
+						 
+//						 insertStatement = "INSERT INTO " + table + "( " + pair.getKey() + ") VALUES ( '" 
+//			                              + pair.getValue() + "' );";
+//						 this.executeUpdate(conn, insertStatement);
+					} catch (SQLException e) {e.printStackTrace();}
+					
+			           it.remove();
 				}
+				 
+				 
+				 
 			}
 		}
-		
-
 	}
 	
 	public String  getParentObject(){ return this.credentials[1];}
 	public boolean getIsConnected(){return this.isConnected;}
-
-
-
-
 }
 
 //
