@@ -142,13 +142,10 @@ public class SQLConnector {
         }
     }
 
-    protected void errorConnecting(){
-
-    }
-    protected void successfulConnection(){ 
-
-    }
+    protected void errorConnecting(){    }
+    protected void successfulConnection(){  }
     protected String[] getCreds(){return credentials;}
+    public    Connection getConnection(){return conn;}
 
 }
 

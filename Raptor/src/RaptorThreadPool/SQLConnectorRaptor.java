@@ -19,40 +19,16 @@ public class SQLConnectorRaptor extends SQLConnector{
 	HashMap<String, PreparedStatement> statments;
 	ArrayList<String>                  tables;
 	RaptorThreadPoolManager            parentPoolManager;
-	XmlData                            tree;
-
+	XmlWorkerCommandBuilder                            tree;
+	ArrayList<String> columns;
+    ArrayList<String> values;
+	
 	public SQLConnectorRaptor(){super();}
 	public SQLConnectorRaptor(RaptorThreadPoolManager parent){
 		super();
 		parentPoolManager = parent;
 		tables            = new ArrayList();
 		createStatements();
-
-		/// hashmap ("createTable", preparedStatement)
-		/// hashmap.get("createTable").setString( someValue, someOtherValue, EvenMoreValues);
-		/// 
-		//		
-		//		NAME::Registrant                                  # the table name
-		//		  -->RegistrantCountry = USA                      # column::REGISTRANTCOUNTRY, value::USA
-		//		  -->RegistrantName = Liebman & Associates, Inc.  # column::REGISTRANTNAME,    value::LIEBMAN & ASSOCIATES, INC.
-		//		  -->Address = 1250 24th Street, NW, Suite 300    # column::ADDRESS,           value:: 1250 24th STREET, NW, SUITE 300
-
-
-		//
-		/// hashmap ("createTable", preparedStatement)
-		/// hashmap.get("createTable").setString( someValue, someOtherValue, EvenMoreValues);
-		/// hashmap.get("insertDataRegistrant").setString(  theCorrectTable, 
-
-		//		
-		//		String sqlCreate = "CREATE TABLE IF NOT EXISTS " + this.getTableName()
-		//	            + "  (brand           VARCHAR(10),"
-		//	            + "   year            INTEGER,"
-		//	            + "   number          INTEGER,"
-		//	            + "   value           INTEGER,"
-		//	            + "   card_count           INTEGER,"
-		//	            + "   player_name     VARCHAR(50),"
-		//	            + "   player_position VARCHAR(20))";
-
 	}
 
 	private void createStatements(){
@@ -71,65 +47,46 @@ public class SQLConnectorRaptor extends SQLConnector{
 		parentPoolManager.setValidInput(true);
 	}
 
-	public void    injectXmlBlob(XmlData xmlBlob){
-		tree = xmlBlob;
-		String insertStatement = "";
-		
-		
-		for(int i=0;i<tree.size();i++){
-			String table = tree.getElementAt(i).getElementName(); //table name
-			insertStatement = "CREATE TABLE IF NOT EXISTS " + tree.getElementAt(i).getElementName()
-					        + " (pid INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY(pid));";
-		    
-			//execute the update, create table if not exists
-			try {
-				System.out.println(insertStatement);
-				this.executeUpdate(conn, insertStatement);
-			} catch (SQLException e) {e.printStackTrace();}
-			
-			for( int k=0;k< tree.getDataList().size();k++){	
-				 Iterator it =  tree.getElementAt(i).getElements().entrySet().iterator();
-				 
-				 while(it.hasNext()){
-					Map.Entry pair = (Map.Entry)it.next();
-					//System.out.println("  -->" + pair.getKey() + " = " + pair.getValue()); //key = column, value = value;
-					
-					
-					//check if column exists
-					try {
-						DatabaseMetaData md = (DatabaseMetaData) conn.getMetaData();
-						ResultSet r;
-						r = md.getColumns(null, null, "table_name", "column_name");
-						
-						//build the columns
-						//get list of the values
-						//get list of the keys
-						// create insert statement after you gather them
-						// execute insertion
-						//!exists
-						 if (r.next()) {
-							 //check the length of value, make LONG,MEDIUM,SMALL-TEXT
-							 System.out.println("column does not exist::Creating column" );
-							 insertStatement = "ALTER TABLE " + table + " ADD COLUMN " + pair.getKey() + " LONGTEXT ;"; 
-						     this.executeUpdate(conn, insertStatement);
-						     System.out.println(insertStatement);
-						 }
-						 else{
-							
-						 }
-						 
-//						 insertStatement = "INSERT INTO " + table + "( " + pair.getKey() + ") VALUES ( '" 
-//			                              + pair.getValue() + "' );";
-//						 this.executeUpdate(conn, insertStatement);
-					} catch (SQLException e) {e.printStackTrace();}
-					
-			           it.remove();
-				}
-				 
-				 
-				 
-			}
-		}
+	
+	
+	//TODO: XML THREADS SHOULD CREATE STATEMENTS FOR THE SQL THREAD
+	public void    injectXmlBlob(XmlWorkerCommandBuilder xmlBlob){
+//		tree = xmlBlob;
+//		String insertStatement = "";
+//		
+//		for(int i=0;i<tree.size();i++){
+//			String table = tree.getElementAt(i).getElementName(); //table name
+//			insertStatement = "CREATE TABLE IF NOT EXISTS " + tree.getElementAt(i).getElementName()
+//					        + " (pid INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY(pid));";
+//
+//			//Create table if not exists
+//			try {
+//				this.executeUpdate(conn, insertStatement);
+//			} catch (SQLException e) {e.printStackTrace();}
+//		}//end for(i)
+	}
+	
+	
+	//TODO:optimize this 
+	private String insertStatementBuilder(ArrayList<String> c, ArrayList<String> v, String tableName){
+	  
+	    String statement = "INSERT INTO " + tableName + " ( ";
+	    for(int i=0;i<c.size();i++){
+	        statement += c.get(i);
+	        if((c.size() - 1) >i )
+	            statement+= " ,";
+	        else
+	            statement+= " ) VALUES ('";
+	    }
+	    for(int i=0;i<v.size();i++){
+	        statement+= v.get(i);
+	        if((v.size() - 1) >i )
+	            statement+= "' ,'";
+            else
+                statement+= "' );";
+	    }
+	    
+	    return statement;
 	}
 	
 	public String  getParentObject(){ return this.credentials[1];}
@@ -151,3 +108,46 @@ public class SQLConnectorRaptor extends SQLConnector{
 //	}
 //}
 
+
+
+//
+//for( int k=0;k< tree.getDataList().size();k++){ //inside specific table
+//   Iterator it =  tree.getElementAt(i).getElements().entrySet().iterator();
+//   //  columns = new ArrayList<String>();
+//   //  values  = new ArrayList<String>();
+//     
+//   while(it.hasNext()){
+//      Map.Entry pair = (Map.Entry)it.next();
+//  
+//      //check if column exists
+//      try {
+//          DatabaseMetaData md = (DatabaseMetaData) conn.getMetaData();
+//          ResultSet r;
+//          r = md.getColumns(null, null, table, (String)pair.getKey());
+//          
+//          //!exists
+//           if (!r.next()) {
+//             //check the length of value, make LONG,MEDIUM,SMALL-TEXT
+//                 System.out.println("column does not exist::Creating column->" + pair.getKey() + "::table->" + table );
+//                // insertStatement = "ALTER TABLE " + table + " ADD COLUMN " + pair.getKey() + " LONGTEXT ;"; 
+//                 
+//               //  this.executeUpdate(conn, insertStatement);
+//                 
+//           }
+//           //columns.add((String) pair.getKey());
+//             //values.add((String)  pair.getValue());
+//            
+//      } catch (SQLException e) {e.printStackTrace();}
+//      
+//      //it.remove();
+//  }//end while
+     
+     //insert to db
+//   try {
+//       // this.executeUpdate(conn, insertStatementBuilder(columns, values, table));
+//    } catch (SQLException e) {e.printStackTrace();}  
+//     
+//     
+//}//end for(k)
+//
+//

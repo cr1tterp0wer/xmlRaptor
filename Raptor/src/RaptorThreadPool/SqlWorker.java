@@ -3,7 +3,7 @@ package RaptorThreadPool;
 public class SqlWorker implements Runnable{
 
  
-    private XmlData       tree;
+    private XmlWorkerCommandBuilder       tree;
     private int           workerID;
     private ThreadSpawner spawner;
     
@@ -11,7 +11,7 @@ public class SqlWorker implements Runnable{
 
     //SHOULD SPAWN WITH XMLOBJECT
     public SqlWorker(int id, ThreadSpawner s, Object data){
-        this.tree    = (XmlData)data;
+        this.tree    = (XmlWorkerCommandBuilder)data;
         workerID     = id;
         spawner      = s;
         sqlConnector = spawner.getManager().getConnector();

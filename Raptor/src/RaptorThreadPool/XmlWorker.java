@@ -10,7 +10,7 @@ import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
-import RaptorThreadPool.XmlData.XmlBlob;
+import RaptorThreadPool.XmlWorkerCommandBuilder.XmlBlob;
 
 public class XmlWorker implements Runnable {
 
@@ -21,7 +21,7 @@ public class XmlWorker implements Runnable {
 	private XMLInputFactory xmlInputFactory;
 	private XMLStreamReader xmlStreamReader;
 	private int       event;
-	private XmlData   tree;
+	private XmlWorkerCommandBuilder   tree;
 	private XmlBlob   element;
 	private String    parentObjectName;
 	private String    attributeID="";
@@ -32,13 +32,12 @@ public class XmlWorker implements Runnable {
 		this.file    = new File(f);
 		parentObjectName = this.spawner.getManager().getConnector().getParentObject();
 		xmlInputFactory  = XMLInputFactory.newInstance();   
-		tree             = new XmlData();
+		tree             = new XmlWorkerCommandBuilder();
 	}
 
 	public void run(){       
 
 		try{parseFile();}catch(Exception e){e.printStackTrace();}
-
 		finish();
 	}
 
@@ -71,6 +70,8 @@ public class XmlWorker implements Runnable {
 				
 				element.setElementName(xmlStreamReader.getLocalName());
 				element.setParentID(attributeID);
+				System.out.println("ELEMENTNAME::" + element.getParentID());
+				
 				
 				element.setElementName(xmlStreamReader.getLocalName());
 				for(int i=0;i<xmlStreamReader.getAttributeCount();i++){				
