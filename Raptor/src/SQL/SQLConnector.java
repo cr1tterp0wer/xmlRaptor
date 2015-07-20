@@ -28,11 +28,22 @@ public class SQLConnector {
         credentials        = new String[NUM_CREDS];
         preparedStatements = new HashMap<String, PreparedStatement>();
 
+        /* [K] Here, I wouldn't want the program to continue, so I'm not sure
+         * why you're catching the exception; just let it stop the program. */
         try {
             Class.forName("com.mysql.jdbc.Driver");
         } catch (ClassNotFoundException e) {e.printStackTrace();}
     }
 
+    /* Notes from Kevin:
+     * [K] I would not store credentials as an array, because it is tough
+     * to understand the indexing of them. I would use a hashtable,
+     * i.e. "path" => path, "xmlObject" => xmlObject, etc
+     * 
+     * Note 2: Instead of storing all of these details, I would store a
+     * single connection string, i.e. jdbc:mysql://... and keep it around
+     * for further connections, removing the redundant copy mechanism.
+     */
     public void connect(String path, String xmlObject, String serverAddress,
                         String port, String username,
                         String pass, String dbName){
