@@ -9,53 +9,64 @@ import com.mysql.jdbc.Connection;
 import com.mysql.jdbc.PreparedStatement;
 
 //Set the connection obj with setConnection before
-public class XmlWorkerCommandBuilder {
+public class CommandBuilder {
 
-    private String curTable;
+    private String   curTable;
+    private String   attrID;
     private String[] values;
     private String[] columns;
-    private String   statement;
-    private String   precompiledSet;
     private String   precompiledStatementStr;
+    private boolean validInsertion;
     
-    private LinkedList<String> commands;
     private Connection conn;
     private PreparedStatement psmt;
 
     
-    public XmlWorkerCommandBuilder(){
-        precompiledStatementStr = "INSERT INTO ";
+    public CommandBuilder(){
+        attrID = "";
+        validInsertion = true;
     }
     
-    public void buildInsertionStatement(String _table,String[] _keys, String[] _values){        
+    public boolean buildInsertionStatement(String _table,String[] _keys, String[] _values){   
+        
+        assert(_table != null );
+        assert(_keys != null );
+        assert(_values != null );
+        assert(_keys.length == _values.length);
+       validInsertion = true; 
+       psmt    = null;
        columns  = _keys;
        values   = _values;
        curTable = _table;
-       precompiledSet = precompiledSetBuilder(columns.length);
        
-       precompiledStatementStr += curTable + " " + buildSet(columns) + " VALUES " + precompiledSet + ";";
-       
-       
-       //init(psmt)
-       try {psmt = (PreparedStatement) conn.prepareStatement(precompiledStatementStr);} catch (SQLException e){e.printStackTrace();}
-       
-       System.out.println(precompiledStatementStr);
-       prepareStatement(psmt,values );
+       if(columns.length > 0 && values.length > 0){
+           precompiledStatementStr ="INSERT INTO "+  curTable + " " + buildSet(columns);
+           precompiledStatementStr += " VALUES " + precompiledSetBuilder(columns.length) + ";";
+            
+           //init(psmt)
+           try {psmt = (PreparedStatement) conn.prepareStatement(precompiledStatementStr);} catch (SQLException e){e.printStackTrace();}
+           
+          // System.out.println(precompiledStatementStr);
+           prepareStatement(psmt,values );
+           validInsertion = false;
+       }
+       return validInsertion;
     }
+    
     public void executeStatement(){
         if(psmt != null){
             try {psmt.executeUpdate();} catch (SQLException e) {e.printStackTrace();}
         }
     }
     
-    
     //creates (a,b,c,d,e,...) sets for insertions stmts
-    private String buildSet(String[] _values){
+    private String buildSet(String[] _items){
         
         StringBuilder builder = new StringBuilder();
+        String[] items = _items;
         
-        for(String value : _values){
-            builder.append(value);
+        for(String item : items){
+            builder.append(item);
             builder.append(",");
         }
         
@@ -78,18 +89,20 @@ public class XmlWorkerCommandBuilder {
     
     private void prepareStatement( PreparedStatement pt, String[] _values){
         for(int i=0;i<_values.length;i++){
-            System.out.println(i);
             try{pt.setString(i+1, _values[i] );} catch (SQLException e) {e.printStackTrace();}
-            System.out.print(_values[i] + " ::");
-            System.out.println(pt.toString());
+            //System.out.print(_values[i] + " ::");
+           // System.out.println(pt.toString());
         }
       
     }
 	
+    public void setAttrID(String id){attrID = id;}
     public void setConnection(Connection _conn){conn = _conn;}
     public void setColumns(String[] _key){columns = _key;}
     public void setValues (String[] _values){values = _values;}
     
-
+    public String getAttrID(){return attrID;}
+    public PreparedStatement getPreparedStmt(){return psmt;}
+    public boolean getValidInsertion(){return validInsertion;}
 }
 

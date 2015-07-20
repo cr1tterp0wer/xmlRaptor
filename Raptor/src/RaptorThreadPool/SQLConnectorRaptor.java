@@ -19,7 +19,7 @@ public class SQLConnectorRaptor extends SQLConnector{
 	HashMap<String, PreparedStatement> statments;
 	ArrayList<String>                  tables;
 	RaptorThreadPoolManager            parentPoolManager;
-	XmlWorkerCommandBuilder                            tree;
+	CommandBuilder                            tree;
 	ArrayList<String> columns;
     ArrayList<String> values;
 	
@@ -50,7 +50,7 @@ public class SQLConnectorRaptor extends SQLConnector{
 	
 	
 	//TODO: XML THREADS SHOULD CREATE STATEMENTS FOR THE SQL THREAD
-	public void    injectXmlBlob(XmlWorkerCommandBuilder xmlBlob){
+	public void    injectXmlBlob(CommandBuilder xmlBlob){
 //		tree = xmlBlob;
 //		String insertStatement = "";
 //		
