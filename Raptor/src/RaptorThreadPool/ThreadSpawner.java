@@ -34,7 +34,7 @@ public class ThreadSpawner {
     public void init(){
         numberOfFiles = manager.getFilePool().getFiles().size();
         
-        if(numberOfFiles>=4){
+        if(numberOfFiles==0){
         	xmlExecutor = Executors.newFixedThreadPool(MAX_NUM_WORKERS);
 	        xmlExecutor.execute(new XmlWorker(workerID++, this, manager.filePool.getFileNameStack().pop() ));
 	        xmlExecutor.execute(new XmlWorker(workerID++, this, manager.filePool.getFileNameStack().pop() ));

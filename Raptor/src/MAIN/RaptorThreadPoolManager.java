@@ -19,7 +19,6 @@ public class RaptorThreadPoolManager {
 
 	public RaptorThreadPoolManager(){
 		credentials      = new String[NUM_OF_CREDS];
-
 		connector        = new SQLConnectorRaptor(this);
 	}
 
@@ -93,7 +92,7 @@ public class RaptorThreadPoolManager {
 	}
 	private void inputDefualtCredentials(){
 
-		credentials[0] = "./metadata/protos/";
+		credentials[0] = "./metadata/filingdb/";
 		credentials[1] = "filing";
 		credentials[2] = "localhost";
 		credentials[3] = "3306";

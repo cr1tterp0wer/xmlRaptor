@@ -26,8 +26,6 @@ public class SqlWorker implements Runnable{
         spawner      = s;
         ps = _ps;
         sqlConnector = spawner.getManager().getConnector();
-        
-        
     }
     
     @Override

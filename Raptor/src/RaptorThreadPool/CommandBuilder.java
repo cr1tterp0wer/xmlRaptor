@@ -53,6 +53,7 @@ public class CommandBuilder {
        return validInsertion;
     }
     
+    //create new executeStatement(String insertionStatement)
     public void executeStatement(){
         if(psmt != null){
             try {psmt.executeUpdate();} catch (SQLException e) {e.printStackTrace();}
