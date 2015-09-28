@@ -26,7 +26,8 @@ public class XmlParserController {
 	public void init(){
 		
 		inputDefualtCredentials();                       //get server credentials
-        filePool   = new FilePool(credentials[0]);
+		//inputCredentials();
+		filePool   = new FilePool(credentials[0]);
         threadPool = new ThreadPool(credentials, filePool);
         
 		System.out.println("NUMBER OF VALID FILES BEGIN::"+filePool.getFileNameStack().size());
@@ -64,7 +65,7 @@ public class XmlParserController {
 		credentials[3] = "3306";
 		credentials[4] = "root";
 		credentials[5] = "critterpower";       
-		credentials[6] = "test";     
+		credentials[6] = "1999_db";     
 		validInput = true;
 	}
 	private void inputCredentials(){
@@ -95,6 +96,7 @@ public class XmlParserController {
 			credentials[6]          = scan.nextLine();
 
 			//  sqlThread.init(credentials);
+			validInput=true;
 		}
 		validInput=true;
 	}

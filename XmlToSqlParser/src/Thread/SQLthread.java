@@ -38,8 +38,6 @@ public class SQLthread  implements Callable{
 			try {
 				String[] curUpdates = future.get();
 				for(int i=0;i< curUpdates.length; i++){
-					//System.out.println(curUpdates[i]);
-					//try {conn.executeUpdate(curUpdates[i]);}
 					
 					try{ SQLstatementAction.prepareMyStatement(curUpdates[i], conn); }
 					
