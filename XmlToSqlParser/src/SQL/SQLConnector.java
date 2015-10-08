@@ -123,8 +123,8 @@ public class SQLConnector {
 				}else{
 					String sql =   "CREATE TABLE " +
 							tableName +
-							"(id INTEGER not NULL AUTO_INCREMENT, " +
-							" PRIMARY KEY ( id ))"; 
+							"(bid INTEGER not NULL AUTO_INCREMENT, " +
+							" PRIMARY KEY ( bid ))"; 
 
 					executeUpdate( sql );
 					System.out.println("Created a table:" + tableName);
@@ -136,6 +136,36 @@ public class SQLConnector {
 			}
 		}
 	}
+	
+	
+	public static void createTableWithColumns(String tableName, String questionArgs){
+		createTable(tableName);
+		String[] argsArr = questionArgs.split("  VALUE \\(?")[0].split(" \\(")[1].replace(")","").split(",");
+		String   updateString = "";
+	// 	"ALTER TABLE " + tableName + " ADD " + columnName + "TEXT";
+		
+		
+		
+		Statement stmt = null;
+		try {
+			stmt = conn.createStatement();
+			
+			
+			for(int i =0; i < argsArr.length;i++){
+				stmt.executeUpdate("ALTER TABLE " + tableName + " ADD " + argsArr[i] + " TEXT; ");
+			}
+			
+			
+			//stmt.executeUpdate(updateString); 
+		}catch(SQLException e){e.printStackTrace();}
+		
+		
+		
+	}
+	
+	
+	
+	
 	
 	public static boolean executeUpdate(String command) throws SQLException {
 		if(isConnected()){

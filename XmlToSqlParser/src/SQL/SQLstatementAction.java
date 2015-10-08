@@ -96,9 +96,11 @@ public class SQLstatementAction {
 			int code = e.getErrorCode();
 			switch(code){
 			case 1146 : c.createTable(psMap.get(tableName).split(" ")[2]);
+			            c.createTableWithColumns(tableName, psMap.get(tableName));
 			    try {
 			    	pstmt = (PreparedStatement) c.getConn().prepareStatement(psMap.get(tableName));
-					pstmt.executeUpdate(psMap.get(tableName));
+					//pstmt.executeUpdate(psMap.get(tableName));
+			    	prepareMyStatement(raw,c);
 				}catch (SQLException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
