@@ -59,13 +59,13 @@ public class XmlParserController {
 	//	##################Private methods##################  //
 	private void inputDefualtCredentials(){
 
-		credentials[0] = "./metadata/TEST/1999/";
+		credentials[0] = "./metadata/TEST/1999";
 		credentials[1] = "filing";
 		credentials[2] = "localhost";
 		credentials[3] = "3306";
 		credentials[4] = "root";
-		credentials[5] = "critterpower";       
-		credentials[6] = "1999_db";     
+		credentials[5] = "";       
+		credentials[6] = "lobby_db";     
 		validInput = true;
 	}
 	private void inputCredentials(){

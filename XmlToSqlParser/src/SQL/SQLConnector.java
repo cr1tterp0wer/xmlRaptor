@@ -142,22 +142,22 @@ public class SQLConnector {
 		createTable(tableName);
 		String[] argsArr = questionArgs.split("  VALUE \\(?")[0].split(" \\(")[1].replace(")","").split(",");
 		String   updateString = "";
-	// 	"ALTER TABLE " + tableName + " ADD " + columnName + "TEXT";
-		
-		
 		
 		Statement stmt = null;
 		try {
 			stmt = conn.createStatement();
 			
-			
 			for(int i =0; i < argsArr.length;i++){
 				stmt.executeUpdate("ALTER TABLE " + tableName + " ADD " + argsArr[i] + " TEXT; ");
 			}
-			
-			
+						
 			//stmt.executeUpdate(updateString); 
-		}catch(SQLException e){e.printStackTrace();}
+		}catch(SQLException e){
+			
+			if(e.getErrorCode() != 1060)
+				e.printStackTrace();
+			System.out.println("MySQL ERROR:: " + e.getErrorCode());
+		}
 		
 		
 		
